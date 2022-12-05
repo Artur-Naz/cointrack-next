@@ -45,8 +45,7 @@ const MyStack = styled(Stack)(({theme}) => ({
 }));
 const Dashboard = () => {
     const theme = useTheme();
-
-    console.log('Dashboard');
+    const {data, error, isLoading,} = useGetUserPortfolioQuery(1)
     return (
         <Box>
             <Grid  container spacing={2}>
@@ -67,6 +66,7 @@ const Dashboard = () => {
                                         id="demo-select-small"
                                         value={10}
                                         label="Age"
+                                        onChange={() => null}
                                     >
                                         <MenuItem value="">
                                             <em>None</em>
@@ -79,7 +79,7 @@ const Dashboard = () => {
                             </Stack>
                             <SearchInput/>
 
-                            <CustomizedAccordions></CustomizedAccordions>
+                            <CustomizedAccordions portfolios={data}></CustomizedAccordions>
                         </Box>
                     </Grid>
                     <Grid item xs={12} >
@@ -152,7 +152,7 @@ const Dashboard = () => {
     );
 };
 
-export default memo(Dashboard, () => false);
+export default memo(Dashboard);
 
 // // This function gets called at build time
 // export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(store => async ({req, res}) =>{

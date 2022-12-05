@@ -1,40 +1,33 @@
+//import { useAuth } from "components/AuthProvider"
 import { useRouter } from "next/router"
-import {useAppSelector} from "../../store/hooks";
-import {selectAuthState} from "../../store/slices/authSlice";
-import {NextShield} from "next-shield";
-import {styled} from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import {CircularProgress} from "@mui/material";
-
-const Loader = styled(Box)(({ theme }) => ({
-    display:'flex',
-    position:'absolute',
-    top:0,
-    left:0,
-    width:'100vw',
-    height:'100vh',
-    zIndex:1200,
-    backgroundColor: theme.palette.background.default,
-    alignItems: 'center',
-    justifyContent: 'center'
-}));
+import { useEffect } from "react"
 
 export function AuthGuard({ children }: { children: JSX.Element }) {
-    const authState = useAppSelector(selectAuthState)
+    const { user, initializing, setRedirect } = {user:{},initializing: false, setRedirect: ()=>null}//useAuth()
     const router = useRouter()
-    if(typeof window === 'undefined') {
-        console.log('on server side guard')
 
+    useEffect(() => {
+        if (!initializing) {
+            //auth is initialized and there is no user
+            if (!user) {
+                // remember the page that user tried to access
+             //   setRedirect(router.route)
+                // redirect
+                router.push("/signin")
+            }
+        }
+    }, [initializing, router, user, setRedirect])
+
+    /* show loading indicator while the auth provider is still initializing */
+    if (initializing) {
+        return <h1>Application Loading</h1>
     }
-    return  <NextShield
-        isAuth={authState}
-        isLoading={false}
-        router={router}
-        privateRoutes={['/dashboard', '/home']}
-        publicRoutes={['/signin', '/login']}
-        hybridRoutes={['/']}
-        accessRoute="/dashboard"
-        loginRoute="/login"
-        LoadingComponent={<Loader> <CircularProgress disableShrink /></Loader>}
-    >{children}</NextShield>
+
+    // if auth initialized with a valid user show protected page
+    if (!initializing && user) {
+        return <>{children}</>
+    }
+
+    /* otherwise don't return anything, will do a redirect from useEffect */
+    return null
 }

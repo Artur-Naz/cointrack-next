@@ -35,11 +35,15 @@ export default function SignIn() {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        console.log({
+            email: data.get('email'),
+            password: data.get('password'),
+        });
       login({
           email: data.get('email') as string,
           password: data.get('password') as string,
       }).then((r) => {
-          router.replace('dashboard')
+          router.push('dashboard')
       })
     };
 
