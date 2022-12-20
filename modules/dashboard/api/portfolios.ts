@@ -18,11 +18,7 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
             query: (e) => ({
                 url: `portfolios/all`,
                 method: 'GET',
-                onSuccess:  (dispatch, data) => {
-                    const response = data as GetCatFactResponse;
 
-                    //dispatch(setFacts(response.data));
-                },
             }),
             keepUnusedDataFor: 1,
         }),
