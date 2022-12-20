@@ -2,7 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import {axiosBaseQuery, axiosBaseQueryFactory} from './axiosBaseQuery';
 
 export const tagTypes = {
-    catFacts: 'CatFacts',
+    auth: 'auth',
 } as const;
 
 export type TagType = typeof tagTypes[keyof typeof tagTypes];
