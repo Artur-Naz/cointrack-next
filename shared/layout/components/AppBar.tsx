@@ -14,8 +14,9 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import {memo} from "react";
 import Link from "next/link";
-import {useAppDispatch, useAppSelector} from "../../store/hooks";
-import {logout, selectAuthState} from "../../store/slices/authSlice";
+import {useAppDispatch, useAppSelector} from "../../../store/hooks";
+import {logout, selectAuthState} from "../../../store/slices/authSlice";
+import {useProfileQuery} from "../../../modules/auth/api/authApi";
 
 const pages = ['Dashboard', 'Home', 'index'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -24,6 +25,7 @@ function ResponsiveAppBar(props:any) {
     const dispatch = useAppDispatch()
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+    const {data, isLoading, error} = useProfileQuery(undefined)
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -42,8 +44,6 @@ function ResponsiveAppBar(props:any) {
         setAnchorElUser(null);
     };
 
-
-    const auth = useAppSelector(selectAuthState)
     return (
         <AppBar {...props} position="sticky">
             <Container maxWidth="xl">
@@ -136,23 +136,12 @@ function ResponsiveAppBar(props:any) {
                         <MenuItem  onClick={handleCloseNavMenu}>
                             <Link href={'/'}><Typography textAlign="center">Main</Typography></Link>
                         </MenuItem>
-                        {/*{pages.map((page) => (*/}
-                        {/*    // <Button*/}
-                        {/*    //     key={page}*/}
-                        {/*    //     onClick={handleCloseNavMenu}*/}
-                        {/*    //     sx={{ my: 2, color: 'white', display: 'block' }}*/}
-                        {/*    // >*/}
-                        {/*    //     {page}*/}
-                        {/*    // </Button>*/}
-                        {/*    <Link key={page} href={'/dashboard'}><Typography textAlign="center">{page}</Typography></Link>*/}
-
-                        {/*))}*/}
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                <Avatar alt="Remy Sharp" src={isLoading ? "/static/images/avatar/2.jpg" : data?.avatarUrl } />
                             </IconButton>
                         </Tooltip>
                         <Menu

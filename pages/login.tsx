@@ -26,7 +26,7 @@ function Copyright(props: any) {
 }
 
 
-export default function SignIn() {
+function SignIn() {
     const [login, { isLoading }]  = useLoginMutation()
     const router = useRouter()
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -108,3 +108,7 @@ export default function SignIn() {
         </Box>
     );
 }
+
+SignIn.disableLayout = true
+
+export default SignIn

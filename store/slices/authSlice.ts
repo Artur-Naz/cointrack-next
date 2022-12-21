@@ -5,13 +5,6 @@ import Cookies from "universal-cookie"
 import {persistReducer} from "redux-persist";
 import storage from "redux-persist/lib/storage";
 const cookies = new Cookies();
-export interface UserPlan {
-    endAt?: Date | null
-    id?: string | null
-    planId?: string | null
-    userId?: number | null
-    startAt?: string | null
-}
 
 export interface User {
     id: number
@@ -38,7 +31,7 @@ export interface User {
 
 // Type for our state
 export interface AuthState {
-    authState: boolean;
+    authState: boolean | null;
     accessToken: string | null,
     refreshToken: string | null,
     user?: User;
@@ -46,7 +39,7 @@ export interface AuthState {
 
 // Initial state
 const initialState: AuthState = {
-    authState: false,
+    authState: null,
     accessToken: null,
     refreshToken: null,
     user: {
@@ -61,9 +54,7 @@ const initialState: AuthState = {
 
     },
 };
-// Actual Slice
-// @ts-ignore
-// @ts-ignore
+
 export const authSlice = createSlice({
     name: "auth",
     initialState,
@@ -72,7 +63,7 @@ export const authSlice = createSlice({
         setAuthState(state, action: PayloadAction<boolean>){
             state.authState = action.payload;
         },
-        // Action to set the authentication status
+
         login(state, action: PayloadAction<{ accessToken: string, refreshToken: string, user: User }>) {
             cookies.set('accessToken', action.payload.accessToken,{ path:'/' })
             state.accessToken = action.payload.accessToken;
@@ -94,13 +85,11 @@ export const authSlice = createSlice({
         setUser(state, action: PayloadAction<User>) {
             state.user = action.payload;
         },
-        // Action to set the authentication status
     },
 
     extraReducers: (builder) => {
         builder
             .addCase(createAction<AppState>(HYDRATE), (state, action) => {
-                // action is inferred correctly here if using TS
                // state = action.payload.auth
                 return state
             })

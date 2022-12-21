@@ -24,7 +24,7 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
                     //dispatch(setFacts(response.data));
                 },
             }),
-            keepUnusedDataFor: 1,
+            keepUnusedDataFor: 60 * 4,
         }),
     }),
 });

@@ -27,12 +27,11 @@ MyDocument.getInitialProps = async (ctx) => {
         originalRenderPage({
             enhanceApp: (App: any) =>
                 function EnhanceApp(props) {
-                    return <App emotionCache={cache} auth={true} {...props} />;
+                    return <App emotionCache={cache} auth={Boolean(ctx.req?.headers?.cookie?.includes('accessToken'))} {...props} />;
                 },
         });
 
     const initialProps = await Document.getInitialProps(ctx);
-    console.log('initialProps',initialProps);
     const emotionStyles = extractCriticalToChunks(initialProps.html);
     const emotionStyleTags = emotionStyles.styles.map((style) => (
         <style

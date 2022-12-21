@@ -14,10 +14,10 @@ import MailIcon from '@mui/icons-material/Mail';
 import HomeIcon from '@mui/icons-material/Home';
 import Image from 'next/image'
 import List from '@mui/material/List';
-import {tokens, useMode} from "../../config/theme";
+import {tokens, useMode} from "../../../config/theme";
 import {Icon} from "@mui/material";
 import Link from "next/link";
-import CustomizedTreeView from "../tree-view";
+import CustomizedTreeView from "../../components/tree-view";
 
 const drawerWidth = 240;
 

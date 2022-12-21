@@ -13,7 +13,7 @@ import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Image } from 'mui-image'
-import PortfolioMenuItem from "../modules/dashboard/components/portfolio-menu/portfolio-menu-item";
+import PortfolioMenuItem from "../../modules/dashboard/components/portfolio-menu/portfolio-menu-item";
 function MinusSquare(props: SvgIconProps) {
     return (
         <SvgIcon fontSize="inherit" style={{width: 14, height: 14}} {...props}>

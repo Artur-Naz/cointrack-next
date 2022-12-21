@@ -41,4 +41,14 @@ function Home({}: any) {
 }
 export default Home
 
+Home.disableLayout = true
+// This function gets called at build time
+// @ts-ignore
+export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(store => async ({req, res, rest}) =>{
+    return {
+        props: {
+            x:1
+        },
+    }
+})
 

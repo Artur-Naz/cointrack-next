@@ -20,7 +20,7 @@ const persistConfig = {
     version: 1,
     reconciliation: autoMergeLevel2,
     whitelist:[],
-    timeout: 1,
+    timeout: 10,
     storage,
 }
 

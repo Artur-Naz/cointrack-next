@@ -10,14 +10,14 @@ import {
     Typography,
     useTheme
 } from "@mui/material";
-import SearchInput from "../../components/inputs/SearchInput";
+import SearchInput from "../../shared/components/inputs/SearchInput";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import {styled} from "@mui/material/styles";
 import Grid from '@mui/material/Grid';
 import React, {memo, useEffect, useMemo} from "react";
 import {useGetUserPortfolioQuery} from "../../modules/dashboard/api/portfolios";
-import CustomizedTreeView from "../../components/tree-view";
+import CustomizedTreeView from "../../shared/components/tree-view";
 import CustomizedAccordions from "./components/portfolio-menu/portfolio-menu";
 
 

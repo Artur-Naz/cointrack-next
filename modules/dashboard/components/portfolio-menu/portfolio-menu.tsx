@@ -12,6 +12,7 @@ import Box from "@mui/material/Box";
 import {Stack} from "@mui/material";
 import Divider from "@mui/material/Divider";
 import {SyntheticEvent, useCallback, useMemo} from "react";
+import {useGetUserPortfolioQuery} from "../../api/portfolios";
 
 const Accordion = styled((props: AccordionProps) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -60,11 +61,11 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
     },
 }));
 
-export default function CustomizedAccordions({portfolios = {}}: any) {
+export default function CustomizedAccordions() {
+    const {data:portfolios, error, isLoading} = useGetUserPortfolioQuery(1, {pollingInterval: 6000, refetchOnMountOrArgChange: false })
 
 
-
-    const exchanges: any[] = useMemo(() => (portfolios.exchanges || [])?.map((exchange: any) => exchange), [portfolios])
+    const exchanges: any[] = useMemo(() => (portfolios?.exchanges || [])?.map((exchange: any) => exchange), [portfolios])
     const [expanded, setExpanded] = React.useState<Record<string, boolean>>(exchanges.reduce<Record<string, boolean>>((acc, ex) => {
         acc[ex.id] = true
         return acc;
