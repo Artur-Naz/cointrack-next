@@ -62,7 +62,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 export default function CustomizedAccordions() {
-    const {data:portfolios, error, isLoading} = useGetUserPortfolioQuery(1)
+    const {data:portfolios, error, isLoading} = useGetUserPortfolioQuery(1, {pollingInterval: 6000, refetchOnMountOrArgChange: false })
 
 
     const exchanges: any[] = useMemo(() => (portfolios?.exchanges || [])?.map((exchange: any) => exchange), [portfolios])

@@ -5,6 +5,8 @@ import {
 } from "../store/slices/authSlice";
 import {useAppDispatch, useAppSelector} from "../store/hooks";
 import Link from "next/link";
+import {GetServerSideProps} from "next";
+import {wrapper} from "../store/store";
 
 function Home({}: any) {
   const authState = useAppSelector(selectAuthState);
@@ -26,4 +28,14 @@ function Home({}: any) {
 }
 export default Home
 
+Home.disableLayout = true
+// This function gets called at build time
+// @ts-ignore
+export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(store => async ({req, res, rest}) =>{
+    return {
+        props: {
+            x:1
+        },
+    }
+})
 

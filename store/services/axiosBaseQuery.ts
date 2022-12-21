@@ -1,7 +1,7 @@
 import {BaseQueryFn, FetchArgs, FetchBaseQueryError} from '@reduxjs/toolkit/query/react';
 import {AxiosError, AxiosRequestConfig} from 'axios';
 import axiosInstance from './axiosInstance';
-import {AppDispatch} from "../store";
+import {AppDispatch, AppState} from "../store";
 
 interface CustomQueryArgs extends AxiosRequestConfig {
     onSuccess?: (dispatch: AppDispatch, data: any) => Promise<void> | void;
@@ -10,13 +10,15 @@ interface CustomQueryArgs extends AxiosRequestConfig {
 
 export type CustomBaseQueryType = BaseQueryFn<string | CustomQueryArgs, number, unknown >;
 
-export const axiosBaseQuery: CustomBaseQueryType = async (fetchArgs, {dispatch}, extraOptions) => {
+export const axiosBaseQuery: CustomBaseQueryType = async (fetchArgs, {dispatch, getState}, extraOptions) => {
    let result;
     try {
+        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${(getState() as AppState).auth.accessToken}`;
         if( typeof fetchArgs === 'string'){
              result = await axiosInstance.get(fetchArgs);
         }else{
             const {onSuccess, onError, ...args} = fetchArgs
+
             result = await axiosInstance.request(args);
             if (onSuccess) {
                 //errors doesn't throw up, so we need to use try catch here

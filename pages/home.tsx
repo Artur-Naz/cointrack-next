@@ -29,12 +29,4 @@ function Home() {
 }
 export default Home
 
-// This function gets called at build time
-// @ts-ignore
-export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(store => async ({req, res, rest}) =>{
-    return {
-        props: {
 
-        },
-    }
-})
