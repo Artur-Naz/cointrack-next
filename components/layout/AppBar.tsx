@@ -13,11 +13,15 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import {memo} from "react";
+import Link from "next/link";
+import {useAppDispatch, useAppSelector} from "../../store/hooks";
+import {logout, selectAuthState} from "../../store/slices/authSlice";
 
-const pages = ['Products', 'Pricing', 'Blog'];
+const pages = ['Dashboard', 'Home', 'index'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar(props:any) {
+    const dispatch = useAppDispatch()
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -33,9 +37,13 @@ function ResponsiveAppBar(props:any) {
     };
 
     const handleCloseUserMenu = () => {
+        console.log('logaout')
+        dispatch(logout())
         setAnchorElUser(null);
     };
 
+
+    const auth = useAppSelector(selectAuthState)
     return (
         <AppBar {...props} position="sticky">
             <Container maxWidth="xl">
@@ -88,11 +96,15 @@ function ResponsiveAppBar(props:any) {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            {pages.map((page) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography textAlign="center">{page}</Typography>
-                                </MenuItem>
-                            ))}
+                            <MenuItem  onClick={handleCloseNavMenu}>
+                                <Link href={'/dashboard'}><Typography textAlign="center">Dashboard</Typography></Link>
+                            </MenuItem>
+                            <MenuItem  onClick={handleCloseNavMenu}>
+                                <Link href={'/home'}><Typography textAlign="center">Home</Typography></Link>
+                            </MenuItem>
+                            <MenuItem  onClick={handleCloseNavMenu}>
+                                <Link href={'/'}><Typography textAlign="center">Main</Typography></Link>
+                            </MenuItem>
                         </Menu>
                     </Box>
                     <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -115,15 +127,26 @@ function ResponsiveAppBar(props:any) {
                         LOGO
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
-                            <Button
-                                key={page}
-                                onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
-                            >
-                                {page}
-                            </Button>
-                        ))}
+                        <MenuItem  onClick={handleCloseNavMenu}>
+                            <Link href={'/dashboard'}><Typography textAlign="center">Dashboard</Typography></Link>
+                        </MenuItem>
+                        <MenuItem  onClick={handleCloseNavMenu}>
+                            <Link href={'/home'}><Typography textAlign="center">Home</Typography></Link>
+                        </MenuItem>
+                        <MenuItem  onClick={handleCloseNavMenu}>
+                            <Link href={'/'}><Typography textAlign="center">Main</Typography></Link>
+                        </MenuItem>
+                        {/*{pages.map((page) => (*/}
+                        {/*    // <Button*/}
+                        {/*    //     key={page}*/}
+                        {/*    //     onClick={handleCloseNavMenu}*/}
+                        {/*    //     sx={{ my: 2, color: 'white', display: 'block' }}*/}
+                        {/*    // >*/}
+                        {/*    //     {page}*/}
+                        {/*    // </Button>*/}
+                        {/*    <Link key={page} href={'/dashboard'}><Typography textAlign="center">{page}</Typography></Link>*/}
+
+                        {/*))}*/}
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
@@ -148,11 +171,9 @@ function ResponsiveAppBar(props:any) {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">{setting}</Typography>
-                                </MenuItem>
-                            ))}
+                            <MenuItem  onClick={handleCloseUserMenu}>
+                                <Typography textAlign="center">Logout</Typography>
+                            </MenuItem>
                         </Menu>
                     </Box>
                 </Toolbar>

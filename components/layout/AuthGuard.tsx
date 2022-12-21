@@ -1,33 +1,44 @@
-//import { useAuth } from "components/AuthProvider"
 import { useRouter } from "next/router"
-import { useEffect } from "react"
+import {useAppDispatch, useAppSelector} from "../../store/hooks";
+import {selectAuthState, setAuthState} from "../../store/slices/authSlice";
+import {NextShield} from "next-shield";
+import {styled} from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import {CircularProgress} from "@mui/material";
 
-export function AuthGuard({ children }: { children: JSX.Element }) {
-    const { user, initializing, setRedirect } = {user:{},initializing: false, setRedirect: ()=>null}//useAuth()
+const Loader = styled(Box)(({ theme }) => ({
+    display:'flex',
+    position:'absolute',
+    top:0,
+    left:0,
+    width:'100vw',
+    height:'100vh',
+    zIndex:1200,
+    backgroundColor: theme.palette.background.default,
+    alignItems: 'center',
+    justifyContent: 'center'
+}));
+
+export function AuthGuard({ children, auth }: { children: JSX.Element, auth: boolean }) {
+    const authState = useAppSelector(selectAuthState)
     const router = useRouter()
+    if(typeof window === 'undefined') {
+        console.log('on server side guard', auth)
 
-    useEffect(() => {
-        if (!initializing) {
-            //auth is initialized and there is no user
-            if (!user) {
-                // remember the page that user tried to access
-             //   setRedirect(router.route)
-                // redirect
-                router.push("/signin")
-            }
-        }
-    }, [initializing, router, user, setRedirect])
-
-    /* show loading indicator while the auth provider is still initializing */
-    if (initializing) {
-        return <h1>Application Loading</h1>
+    }else{
+        console.log('on client side guard', auth)
+        useAppDispatch()(setAuthState(true))
     }
-
-    // if auth initialized with a valid user show protected page
-    if (!initializing && user) {
-        return <>{children}</>
-    }
-
-    /* otherwise don't return anything, will do a redirect from useEffect */
-    return null
+    //<Loader> <CircularProgress disableShrink /></Loader>
+    return  <NextShield
+        isAuth={auth || authState}
+        isLoading={true}
+        router={router}
+        privateRoutes={['/dashboard', '/home']}
+        publicRoutes={['/signin', '/login']}
+        hybridRoutes={['/']}
+        accessRoute="/dashboard"
+        loginRoute="/login"
+        LoadingComponent={null}
+    >{children}</NextShield>
 }
