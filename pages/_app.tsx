@@ -3,7 +3,7 @@ import type {AppProps} from 'next/app'
 import {ColorModeContext, useMode} from '../config/theme'
 import {Provider} from 'react-redux';
 import {CircularProgress, CssBaseline, ThemeProvider} from "@mui/material";
-import React, {useCallback, useState} from "react";
+import React from "react";
 import {CacheProvider, EmotionCache} from "@emotion/react";
 import createEmotionCache from "../utils/createEmotionCache";
 import {AppState, wrapper} from "../store/store";
@@ -14,11 +14,7 @@ import ResponsiveAppBar from "../components/layout/AppBar";
 import Container from "@mui/material/Container";
 import {PersistGate} from 'redux-persist/integration/react'
 import {persistStore} from "redux-persist";
-import {NextShield} from "next-shield";
-import {useRouter} from "next/router";
-import {selectAuthState} from "../store/slices/authSlice";
 import {styled, Theme} from "@mui/material/styles";
-import {useAppSelector} from "../store/hooks";
 import {AuthGuard} from "../components/layout/AuthGuard";
 
 
@@ -41,27 +37,28 @@ function App({
                  pageProps,
                  emotionCache = clientSideEmotionCache,
                  ...appProps
-             }: AppProps & { emotionCache: EmotionCache }) {
+             }: AppProps & { emotionCache: EmotionCache, auth:boolean }) {
     const {store, props} = wrapper.useWrappedStore({pageProps});
     setupListeners(store.dispatch)
     const [theme, colorMode] = useMode();
 
     const pagesWithoutLayout = ['/login']
 
-    const router = useRouter()
-    // const auth = useAppSelector(state => selectAuthState(state))
-    return <PersistGate persistor={persistStore(store)} loading={<Loader> <CircularProgress disableShrink /></Loader>}>
-        <Provider store={store}>
+    console.log(appProps, pageProps)
+    //persistStore(store).persist()
+    // const auth = useAppSelector(state => selectAuthState(state))//<Loader> <CircularProgress disableShrink /></Loader>
+    return <PersistGate  persistor={persistStore(store)} loading={null}><Provider store={store}>
             <ColorModeContext.Provider value={colorMode as any}>
 
                 <CacheProvider value={emotionCache}>
                     <ThemeProvider theme={theme as any}>
+
                         <Box display={'flex'} flexDirection={'column'} className="app" minHeight={'100vh'}>
                             <CssBaseline/>
                             {!pagesWithoutLayout.includes(appProps.router.pathname) && <ResponsiveAppBar/>}
 
                             <Container component="main" sx={{mt: 8, mb: 2}} maxWidth={'xl'}>
-                                <AuthGuard>
+                                <AuthGuard auth={appProps.auth}>
                                     <span></span>
                                 </AuthGuard>
                                 <Component {...props.pageProps} />
@@ -90,8 +87,7 @@ function App({
                 </CacheProvider>
 
             </ColorModeContext.Provider>
-        </Provider>
-        </PersistGate>
+    </Provider></PersistGate>
 }
 
 export default App;

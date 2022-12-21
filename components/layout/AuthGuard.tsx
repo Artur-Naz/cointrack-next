@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
-import {useAppSelector} from "../../store/hooks";
-import {selectAuthState} from "../../store/slices/authSlice";
+import {useAppDispatch, useAppSelector} from "../../store/hooks";
+import {selectAuthState, setAuthState} from "../../store/slices/authSlice";
 import {NextShield} from "next-shield";
 import {styled} from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -19,22 +19,26 @@ const Loader = styled(Box)(({ theme }) => ({
     justifyContent: 'center'
 }));
 
-export function AuthGuard({ children }: { children: JSX.Element }) {
+export function AuthGuard({ children, auth }: { children: JSX.Element, auth: boolean }) {
     const authState = useAppSelector(selectAuthState)
     const router = useRouter()
     if(typeof window === 'undefined') {
-        console.log('on server side guard')
+        console.log('on server side guard', auth)
 
+    }else{
+        console.log('on client side guard', auth)
+        useAppDispatch()(setAuthState(true))
     }
+    //<Loader> <CircularProgress disableShrink /></Loader>
     return  <NextShield
-        isAuth={authState}
-        isLoading={false}
+        isAuth={auth || authState}
+        isLoading={true}
         router={router}
         privateRoutes={['/dashboard', '/home']}
         publicRoutes={['/signin', '/login']}
         hybridRoutes={['/']}
         accessRoute="/dashboard"
         loginRoute="/login"
-        LoadingComponent={<Loader> <CircularProgress disableShrink /></Loader>}
+        LoadingComponent={null}
     >{children}</NextShield>
 }

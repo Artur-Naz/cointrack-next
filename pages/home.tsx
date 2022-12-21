@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import {useDispatch, useSelector} from "react-redux";
-import {selectAuthState, setAuthState} from "../store/slices/authSlice";
+import {selectAuthState} from "../store/slices/authSlice";
 import Link from "next/link";
 import {wrapper} from "../store/store";
 import {GetServerSideProps} from "next";

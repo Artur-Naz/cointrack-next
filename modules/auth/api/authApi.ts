@@ -1,8 +1,7 @@
 import {cointrackApi} from "../../../store/services/cointrack";
-import {setAuthState, setTokens, setUser, User} from "../../../store/slices/authSlice";
+import {login, User} from "../../../store/slices/authSlice";
 import {LoginResponse} from "./responses/login.response";
 import _ from "lodash"
-
 
 export const authApi = cointrackApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -19,7 +18,7 @@ export const authApi = cointrackApi.injectEndpoints({
                     localStorage.setItem("accessToken", accessToken)
                     localStorage.setItem("refreshToken", refreshToken)
                     const normalizedUser: User = {
-                        ...user,
+                        ..._.omit(user, ['userPlan']),
                         planId: user.userPlan?.planId,
                         subscriptionId: user.userPlan?.id,
                         subscriptionStartAt: user.userPlan?.startAt,
@@ -33,9 +32,7 @@ export const authApi = cointrackApi.injectEndpoints({
                         portfolioUpdates: user.userPlan?.currentPlan.portfolioUpdates,
                         trialPeriod: user.userPlan?.currentPlan.trialPeriod,
                     }
-                    dispatch(setUser(normalizedUser));
-                    dispatch(setTokens({ accessToken, refreshToken }));
-                    dispatch(setAuthState(true));
+                    dispatch(login({accessToken, refreshToken, user: normalizedUser} ));
                 },
             }),
         }),

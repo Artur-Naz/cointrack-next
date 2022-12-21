@@ -15,7 +15,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import {memo} from "react";
 import Link from "next/link";
 import {useAppDispatch, useAppSelector} from "../../store/hooks";
-import {selectAuthState, setAuthState} from "../../store/slices/authSlice";
+import {logout, selectAuthState} from "../../store/slices/authSlice";
 
 const pages = ['Dashboard', 'Home', 'index'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -37,8 +37,8 @@ function ResponsiveAppBar(props:any) {
     };
 
     const handleCloseUserMenu = () => {
-        console.log('')
-        dispatch(setAuthState(false))
+        console.log('logaout')
+        dispatch(logout())
         setAnchorElUser(null);
     };
 

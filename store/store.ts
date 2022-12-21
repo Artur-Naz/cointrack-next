@@ -1,5 +1,5 @@
 import {configureStore, ThunkAction, Action, combineReducers} from "@reduxjs/toolkit";
-import { authSlice } from "./slices/authSlice";
+import persistAuthSliceReducer, {authSlice} from "./slices/authSlice";
 import { createWrapper } from "next-redux-wrapper";
 import {cointrackApi} from "./services/cointrack";
 import {unauthenticatedMiddleware} from "./middlewares/unauthenticatedMiddleware";
@@ -13,18 +13,20 @@ import {
     REGISTER,
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
+import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 
 const persistConfig = {
     key: 'root',
     version: 1,
-    whitelist:[authSlice.name],
-    timeout: 100,
+    reconciliation: autoMergeLevel2,
+    whitelist:[],
+    timeout: 1,
     storage,
 }
 
 const makeStore = () =>{
     const persistedReducer = persistReducer(persistConfig, combineReducers({
-        [authSlice.name]: authSlice.reducer,
+        [authSlice.name]: persistAuthSliceReducer,
         [cointrackApi.reducerPath]: cointrackApi.reducer,
     }))
    return  configureStore({

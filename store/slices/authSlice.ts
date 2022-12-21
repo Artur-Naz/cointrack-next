@@ -1,7 +1,10 @@
 import {createAction, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {AppState} from "../store";
 import {HYDRATE} from "next-redux-wrapper";
-
+import Cookies from "universal-cookie"
+import {persistReducer} from "redux-persist";
+import storage from "redux-persist/lib/storage";
+const cookies = new Cookies();
 export interface UserPlan {
     endAt?: Date | null
     id?: string | null
@@ -66,12 +69,25 @@ export const authSlice = createSlice({
     initialState,
 
     reducers: {
-
-        // Action to set the authentication status
-        setAuthState(state, action: PayloadAction<boolean>) {
+        setAuthState(state, action: PayloadAction<boolean>){
             state.authState = action.payload;
         },
-        setTokens(state, action: PayloadAction<{ accessToken: string, refreshToken: string }>) {
+        // Action to set the authentication status
+        login(state, action: PayloadAction<{ accessToken: string, refreshToken: string, user: User }>) {
+            cookies.set('accessToken', action.payload.accessToken,{ path:'/' })
+            state.accessToken = action.payload.accessToken;
+            state.refreshToken = action.payload.refreshToken;
+            state.user = action.payload.user;
+            state.authState = true;
+        },
+        logout(state){
+            console.log('dispatch logout');
+            cookies.remove('accessToken', { path:'/' })
+            state.accessToken = null;
+            state.user = {...initialState.user} as User;
+            state.authState = false;
+        },
+        setTokens(state, action: PayloadAction<{ accessToken: string, refreshToken: string, user: User }>) {
             state.accessToken = action.payload.accessToken;
             state.refreshToken = action.payload.refreshToken;
         },
@@ -91,7 +107,7 @@ export const authSlice = createSlice({
     },
 });
 
-export const {setAuthState, setUser, setTokens} = authSlice.actions;
+export const {login, logout, setUser, setTokens, setAuthState} = authSlice.actions;
 
 export const selectAuthState = (state: AppState) => state.auth.authState;
 export const selectUser = (state: AppState) => state.auth.user;
@@ -100,4 +116,4 @@ export const selectTokens = (state: AppState) => ({
     refreshToken: state.auth.accessToken
 });
 
-export default authSlice.reducer;
+export default persistReducer({ key:authSlice.name, blacklist: ['authState'], storage}, authSlice.reducer);
