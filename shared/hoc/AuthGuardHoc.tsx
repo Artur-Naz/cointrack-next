@@ -1,47 +1,31 @@
 import { useRouter } from "next/router"
-import {NextShield} from "next-shield";
-import {styled} from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import {CircularProgress} from "@mui/material";
-import {hybridRoutes, privateRoutes, publicRoutes} from "../../config/routes";
-import {useAppSelector} from "../../store/hooks";
-import {selectAuthState} from "../../store/slices/authSlice";
-import {useProfileQuery} from "../../modules/auth/api/authApi";
+import { privateRoutes, publicRoutes} from "../../config/routes";
+import {useSession} from "next-auth/react";
+import {useEffect} from "react";
+import {useAppDispatch} from "../../store/hooks";
+import {login, logout} from "../../store/slices/authSlice";
 
-const Loader = styled(Box)(({ theme }) => ({
-    display:'flex',
-    position:'absolute',
-    top:0,
-    left:0,
-    width:'100vw',
-    height:'100vh',
-    zIndex:1200,
-    backgroundColor: theme.palette.background.default,
-    alignItems: 'center',
-    justifyContent: 'center'
-}));
 
 export function AuthGuardHoc({ children }: { children: JSX.Element }) {
-    const {data, isLoading, error} = useProfileQuery(undefined)
-    const authState = useAppSelector(selectAuthState)
+    const { status, data } = useSession()
+    const dispatch = useAppDispatch()
     const router = useRouter()
-    if(typeof window === 'undefined') {
-        console.log('on server side guard',)
 
-    }else{
-        console.log('on client side guard',)
+    useEffect(() => {
+        if(status === "unauthenticated" && privateRoutes.includes(router.pathname)){
+            router.replace('/login')
+        }
+        if(status === "authenticated" && publicRoutes.includes(router.pathname)){
+            router.replace('/dashboard')
+        }
+        if(status === "authenticated"){
+            const { user, accessToken } = data
+            dispatch(login({accessToken, user}));
+        }else if(status === "unauthenticated") {
+            dispatch(logout())
+        }
 
-    }
-    //<Loader> <CircularProgress disableShrink /></Loader>
-    return  <NextShield
-        isAuth={Boolean(authState)}
-        isLoading={authState === null}
-        router={router}
-        privateRoutes={privateRoutes}
-        publicRoutes={publicRoutes}
-        hybridRoutes={hybridRoutes}
-        accessRoute="/dashboard"
-        loginRoute="/login"
-        LoadingComponent={null}
-    >{children}</NextShield>
+    }, [status])
+
+    return  children
 }

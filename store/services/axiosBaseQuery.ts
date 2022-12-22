@@ -8,9 +8,20 @@ interface CustomQueryArgs extends AxiosRequestConfig {
     onError?: (dispatch: AppDispatch, data: any) => Promise<void> | void;
 }
 
-export type CustomBaseQueryType = BaseQueryFn<string | CustomQueryArgs, number, unknown >;
+export type CustomBaseQueryType = BaseQueryFn<string | CustomQueryArgs, unknown, unknown >;
 
-export const axiosBaseQuery: CustomBaseQueryType = async (fetchArgs, {dispatch, getState}, extraOptions) => {
+export type QueryReturnValue<T = unknown, E = unknown, M = unknown> =
+    | {
+    error: E
+    data?: undefined
+    meta?: M
+}
+    | {
+    error?: undefined
+    data: T
+    meta?: M
+}
+export const axiosBaseQuery:CustomBaseQueryType = async (fetchArgs, {dispatch, getState}, extraOptions) => {
    let result;
     try {
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${(getState() as AppState).auth.accessToken}`;

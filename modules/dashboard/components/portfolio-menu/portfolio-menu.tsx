@@ -13,6 +13,7 @@ import {Stack} from "@mui/material";
 import Divider from "@mui/material/Divider";
 import {SyntheticEvent, useCallback, useMemo} from "react";
 import {useGetUserPortfolioQuery} from "../../api/portfolios";
+import {useSession} from "next-auth/react";
 
 const Accordion = styled((props: AccordionProps) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -62,7 +63,8 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 export default function CustomizedAccordions() {
-    const {data:portfolios, error, isLoading} = useGetUserPortfolioQuery(1, {pollingInterval: 6000, refetchOnMountOrArgChange: false })
+    const {status} = useSession()
+    const {data:portfolios, error, isLoading} = useGetUserPortfolioQuery(1, {pollingInterval: 6000, refetchOnMountOrArgChange: false, skip: status !== 'authenticated' })
 
 
     const exchanges: any[] = useMemo(() => (portfolios?.exchanges || [])?.map((exchange: any) => exchange), [portfolios])

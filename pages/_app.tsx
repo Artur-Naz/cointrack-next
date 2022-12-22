@@ -3,20 +3,16 @@ import type {AppProps} from 'next/app'
 import {ColorModeContext, useMode} from '../config/theme'
 import {Provider} from 'react-redux';
 import { CssBaseline, ThemeProvider} from "@mui/material";
-import React, {useEffect} from "react";
+import React from "react";
 import {CacheProvider, EmotionCache} from "@emotion/react";
 import createEmotionCache from "../utils/createEmotionCache";
-import {AppState, wrapper} from "../store/store";
-import Box from '@mui/material/Box';
+import { wrapper } from "../store/store";
 import {setupListeners} from "@reduxjs/toolkit/query";
 import {PersistGate} from 'redux-persist/integration/react'
 import {persistStore} from "redux-persist";
-import {styled, Theme} from "@mui/material/styles";
-import {logout, setAuthState} from "../store/slices/authSlice";
 import MainLayout from "../shared/layout/MainLayout";
-import {privateRoutes, publicRoutes} from "../config/routes";
 import {AuthGuardHoc} from "../shared/hoc/AuthGuardHoc";
-import {useProfileQuery} from "../modules/auth/api/authApi";
+import {SessionProvider} from "next-auth/react";
 
 
 const clientSideEmotionCache = createEmotionCache()
@@ -26,35 +22,30 @@ function App({
                  pageProps,
                  emotionCache = clientSideEmotionCache,
                  ...appProps
-             }: AppProps<{a:number}> & { emotionCache: EmotionCache, auth: boolean }) {
+             }: AppProps & { emotionCache: EmotionCache, auth: boolean }) {
     const {store, props} = wrapper.useWrappedStore({pageProps});
     setupListeners(store.dispatch)
     const [theme, colorMode] = useMode();
-    useEffect(() => {
-        if (publicRoutes.includes(appProps.router.pathname)) {
-            store.dispatch(logout())
-        }else if (privateRoutes.includes(appProps.router.pathname)) {
-            store.dispatch(setAuthState(true))
-        }
-    }, [])
-
+    persistStore(store).persist()
     ////<Loader> <CircularProgress disableShrink /></Loader>
-    return <PersistGate persistor={persistStore(store)} loading={null}><Provider store={store}>
+    return <Provider store={store}>
         <ColorModeContext.Provider value={colorMode as any}>
 
             <CacheProvider value={emotionCache}>
                 <ThemeProvider theme={theme as any}>
                     <CssBaseline/>
+                    <SessionProvider session={pageProps.session}>
                     <MainLayout disableLayout={(Component as any).disableLayout}>
                         <AuthGuardHoc>
                             <Component {...props.pageProps} />
                         </AuthGuardHoc>
                     </MainLayout>
+                    </SessionProvider>
                 </ThemeProvider>
             </CacheProvider>
 
         </ColorModeContext.Provider>
-    </Provider></PersistGate>
+    </Provider>
 }
 
 export default App;
