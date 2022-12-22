@@ -11,6 +11,8 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import {useLoginMutation} from "../modules/auth/api/authApi";
 import {useRouter} from "next/router";
+import axios from "axios";
+import {signIn} from "next-auth/react";
 
 function Copyright(props: any) {
     return (
@@ -29,15 +31,20 @@ function Copyright(props: any) {
 function SignIn() {
     const [login, { isLoading }]  = useLoginMutation()
     const router = useRouter()
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-      login({
-          email: data.get('email') as string,
-          password: data.get('password') as string,
-      }).then((r) => {
-          router.replace('dashboard')
-      })
+        await signIn('credentials',{
+            email: 'testkiwi99@gmail.com',
+            password: 'Testkiwi-99',
+            redirect: false,
+        })
+      // login({
+      //     email: data.get('email') as string,
+      //     password: data.get('password') as string,
+      // }).then((r) => {
+      //     router.replace('dashboard')
+      // })
     };
 
     return (
@@ -90,12 +97,12 @@ function SignIn() {
                 </Button>
                 <Grid container>
                     <Grid item xs>
-                        <Link href="#" variant="body2">
+                        <Link href="pages/login#" variant="body2">
                             Forgot password?
                         </Link>
                     </Grid>
                     <Grid item>
-                        <Link href="#" variant="body2">
+                        <Link href="pages/login#" variant="body2">
                             {"Don't have an account? Sign Up"}
                         </Link>
                     </Grid>

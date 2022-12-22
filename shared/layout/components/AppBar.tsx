@@ -15,9 +15,9 @@ import AdbIcon from '@mui/icons-material/Adb';
 import {memo} from "react";
 import Link from "next/link";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
-import {logout, selectAuthState} from "../../../store/slices/authSlice";
+import {logout, selectAuthState, selectUser} from "../../../store/slices/authSlice";
 import {useProfileQuery} from "../../../modules/auth/api/authApi";
-
+import {signOut} from "next-auth/react";
 const pages = ['Dashboard', 'Home', 'index'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
@@ -25,7 +25,7 @@ function ResponsiveAppBar(props:any) {
     const dispatch = useAppDispatch()
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-    const {data, isLoading, error} = useProfileQuery(undefined)
+    const user = useAppSelector(selectUser)
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -38,9 +38,8 @@ function ResponsiveAppBar(props:any) {
         setAnchorElNav(null);
     };
 
-    const handleCloseUserMenu = () => {
-        console.log('logaout')
-        dispatch(logout())
+    const handleCloseUserMenu = async () => {
+        await signOut({redirect:false})
         setAnchorElUser(null);
     };
 
@@ -141,7 +140,7 @@ function ResponsiveAppBar(props:any) {
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src={isLoading ? "/static/images/avatar/2.jpg" : data?.avatarUrl } />
+                                <Avatar alt="Remy Sharp" src={!user ? "/static/images/avatar/2.jpg" : user.avatarUrl } />
                             </IconButton>
                         </Tooltip>
                         <Menu

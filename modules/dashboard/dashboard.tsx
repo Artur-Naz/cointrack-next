@@ -46,7 +46,6 @@ const MyStack = styled(Stack)(({theme}) => ({
 const Dashboard = () => {
     const theme = useTheme();
 
-    console.log('Dashboard');
     return (
         <Box>
             <Grid  container spacing={2}>

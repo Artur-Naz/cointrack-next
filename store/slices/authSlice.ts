@@ -32,16 +32,14 @@ export interface User {
 // Type for our state
 export interface AuthState {
     authState: boolean | null;
-    accessToken: string | null,
-    refreshToken: string | null,
+    accessToken?: string,
+    refreshToken?: string,
     user?: User;
 }
 
 // Initial state
 const initialState: AuthState = {
     authState: null,
-    accessToken: null,
-    refreshToken: null,
     user: {
         id: 0,
         avatarUrl: '',
@@ -64,23 +62,20 @@ export const authSlice = createSlice({
             state.authState = action.payload;
         },
 
-        login(state, action: PayloadAction<{ accessToken: string, refreshToken: string, user: User }>) {
+        login(state, action: PayloadAction<{ accessToken: string,  user: User }>) {
             cookies.set('accessToken', action.payload.accessToken,{ path:'/' })
             state.accessToken = action.payload.accessToken;
-            state.refreshToken = action.payload.refreshToken;
+           // state.refreshToken = action.payload.refreshToken;
             state.user = action.payload.user;
             state.authState = true;
         },
         logout(state){
-            console.log('dispatch logout');
-            cookies.remove('accessToken', { path:'/' })
-            state.accessToken = null;
+            state.accessToken = undefined;
             state.user = {...initialState.user} as User;
             state.authState = false;
         },
-        setTokens(state, action: PayloadAction<{ accessToken: string, refreshToken: string, user: User }>) {
-            state.accessToken = action.payload.accessToken;
-            state.refreshToken = action.payload.refreshToken;
+        setToken(state, action: PayloadAction<string | undefined>) {
+            state.accessToken = action.payload;
         },
         setUser(state, action: PayloadAction<User>) {
             state.user = action.payload;
@@ -96,7 +91,7 @@ export const authSlice = createSlice({
     },
 });
 
-export const {login, logout, setUser, setTokens, setAuthState} = authSlice.actions;
+export const {login, logout, setUser, setToken, setAuthState} = authSlice.actions;
 
 export const selectAuthState = (state: AppState) => state.auth.authState;
 export const selectUser = (state: AppState) => state.auth.user;
@@ -105,4 +100,4 @@ export const selectTokens = (state: AppState) => ({
     refreshToken: state.auth.accessToken
 });
 
-export default persistReducer({ key:authSlice.name, blacklist: ['authState'], storage}, authSlice.reducer);
+export default persistReducer({ key:authSlice.name, blacklist: ['authState', 'accessToken', 'refreshToken'], storage}, authSlice.reducer);

@@ -3,13 +3,14 @@ import {axiosBaseQuery, axiosBaseQueryFactory} from './axiosBaseQuery';
 
 export const tagTypes = {
     auth: 'auth',
+    portfolios: 'portfolios'
 } as const;
 
 export type TagType = typeof tagTypes[keyof typeof tagTypes];
 
 export const api = createApi({
     reducerPath: 'cointrackApi',
-    baseQuery: axiosBaseQueryFactory({ baseURL: 'http://154.53.56.67:8008/api/v1/' }),
+    baseQuery: axiosBaseQueryFactory({ baseURL: 'http://154.53.56.67:8008/' }),
     tagTypes: Array.from(Object.values(tagTypes)),
     endpoints: () => ({}),
 });

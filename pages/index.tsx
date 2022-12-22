@@ -9,7 +9,7 @@ import {GetServerSideProps} from "next";
 import {wrapper} from "../store/store";
 
 function Home({}: any) {
-  const authState = useAppSelector(selectAuthState);
+  const authState = 'dd'// useAppSelector(selectAuthState);
   return (
     <div className={styles.container}>
 
