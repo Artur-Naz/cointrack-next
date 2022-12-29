@@ -18,11 +18,16 @@ export function AuthGuardHoc({ children }: { children: JSX.Element }) {
         if(status === "authenticated" && publicRoutes.includes(router.pathname)){
             router.replace('/dashboard')
         }
-        if(status === "authenticated"){
-            const { user, accessToken } = data
-            dispatch(login({accessToken, user}));
-        }else if(status === "unauthenticated") {
+        if(status === "unauthenticated"){
             dispatch(logout())
+        }else if(status === "authenticated"){
+            const { user, accessToken, error } = data
+            if(error){
+                dispatch(logout())
+                router.replace('/login')
+            }else{
+                dispatch(login({accessToken, user}));
+            }
         }
 
     }, [status])

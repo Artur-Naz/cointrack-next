@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 import {decodeJwt} from "jose";
 import {User} from "../../../store/slices/authSlice";
+import {NextResponse} from "next/server";
 
 // @ts-ignore
 export default NextAuth({
@@ -85,10 +86,7 @@ async function refreshAccessToken(token: any) {
             refreshToken: refreshedTokens.refreshToken ?? token.refreshToken, // Fall back to old refresh token
         }
     } catch (error) {
-        console.log(error)
-
         return {
-            ...token,
             error: "RefreshAccessTokenError",
         }
     }
@@ -126,7 +124,7 @@ async function getProfile(accessToken?: string){
         }
         return normalizedUser
     }catch (e) {
-        console.log(e);
+       // console.log(e);
         return null
     }
 

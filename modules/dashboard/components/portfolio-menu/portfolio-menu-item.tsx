@@ -5,10 +5,18 @@ import * as React from "react";
 import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
 import { Image } from 'mui-image'
 import Grid from "@mui/material/Grid";
-import Divider from "@mui/material/Divider";
+import {portfolioItemSelectors, portfolioSelectors, useGetUserPortfolioQuery} from "../../api/portfoliosApi";
 
 
-const PortfolioMenuItem =  ({name, icon, sparkline}:any) => {
+const PortfolioMenuItem =  ({ icon, key}:any) => {
+    const { portfolioItem } = useGetUserPortfolioQuery(undefined, {
+        selectFromResult: ({data, error, isLoading, isFetching}) => {
+            return {
+                portfolioItem: data ? portfolioItemSelectors.selectById(data.assetItems, key) : null,
+            }
+        },
+    })
+
     return(
         <Grid
             container component={Button} spacing={0} alignContent={'flex-start'} justifyContent={'flex-start'} alignItems={'center'}>
@@ -30,7 +38,7 @@ const PortfolioMenuItem =  ({name, icon, sparkline}:any) => {
             </Grid>
             <Grid item xs={9}>
                 <Typography align={'left'} variant="subtitle1" noWrap >
-                    {name}
+                    {portfolioItem?.name}
                 </Typography>
             </Grid>
             <Grid item xs={2}>
@@ -45,7 +53,7 @@ const PortfolioMenuItem =  ({name, icon, sparkline}:any) => {
 
             </Grid>
             <Grid item xs={7}>
-                <Sparklines style={{paddingLeft: '6px', height:16, width: '100%'}}   data={sparkline[0].map((s:any) => s[1])}>
+                <Sparklines style={{paddingLeft: '6px', height:16, width: '100%'}}   data={portfolioItem?.rates.usd[0].map((s:any) => s[1])}>
                     <SparklinesLine color="green" />
                     {/*<SparklinesSpots style={{ fill: "#56b45d" }} />*/}
                 </Sparklines>

@@ -1,0 +1,157 @@
+.container{
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.chartWrap {
+  width: 11%;
+  height: 180px;
+  position: relative;
+  margin-left: 23px;
+}
+
+
+
+.bar {
+  width: 23px;
+  position: absolute;
+  background-color: #DCCDFF;
+  border: none;
+  transform: skewY(-23deg);
+  bottom: -12px;
+  transition: 1s;
+}
+
+.bar:before {
+  content: "";
+  position: absolute;
+  left: -23px;
+  bottom: 11px;
+  height: 100%;
+  width: 23px;
+  background-color: #F7F4FF;
+  transform: skewY(45deg);
+}
+
+.bar:after {
+  content: "";
+  position: absolute;
+  top: -22.7px;
+  left: -11.7px;
+  width: 23px;
+  height: 23px;
+  background-color: #805AD5;
+  transform: skewX(45deg);
+}
+
+.shadow {
+  width: 23px;
+  height: 100%;
+  position: absolute;
+  background-color: #805AD5;
+  border: none;
+  transform: skewY(-23deg);
+  bottom: -12px;
+  opacity: 0.2;
+}
+
+.shadow:before {
+  content: "";
+  position: absolute;
+  left: -23px;
+  bottom: 11px;
+  height: 100%;
+  width: 23px;
+  background-color: #805AD5;
+  transform: skewY(45deg);
+  opacity: 0.8;
+}
+
+.shadow:after {
+  content: "";
+  position: absolute;
+  top: -22.7px;
+  left: -11.7px;
+  width: 23px;
+  height: 23px;
+  background-color: #805AD5;
+  transform: skewX(45deg);
+  opacity: 0.8;
+}
+
+.percent {
+  font-family: 'Axiforma', sans-serif;
+  font-style: normal;
+  position: absolute;
+  top: -27px;
+  left: 0;
+  transform: translateX(-50%);
+  font-weight: 400;
+  font-size: 13px;
+}
+
+.name {
+  font-family: 'Axiforma', sans-serif;
+  font-style: normal;
+  position: absolute;
+  left: 0;
+  transform: translateX(-50%);
+  bottom: -42px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  white-space: nowrap;
+}
+
+@media screen and (min-width: 992px) and (max-width: 1279px){
+  .chartWrap {
+    height: 165px;
+  }
+  .percent {
+    top: -35px;
+    left: 0;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px){
+  .container{
+    gap: 20px;
+  }
+
+  .chartWrap {
+    width: 8%;
+    height: 135px;
+  }
+}
+
+@media screen and (max-width: 767px){
+  .container{
+    flex: 1 0 auto;
+    gap: 15px;
+  }
+
+  .chartWrap {
+    width: 9%;
+    height: 155px;
+  }
+
+  .bar {
+    bottom: 0;
+  }
+
+  .shadow {
+    bottom: 0;
+  }
+
+  .percent {
+    top: -36px;
+  }
+
+  .name {
+    bottom: -30px;
+  }
+}

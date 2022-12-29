@@ -14,6 +14,7 @@ import {
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
+import persistPortfolioSliceReducer, {portfolioSlice} from "../modules/dashboard/slices/portfolioSlice";
 
 const persistConfig = {
     key: 'root',
@@ -27,6 +28,7 @@ const persistConfig = {
 const makeStore = () =>{
     const persistedReducer = persistReducer(persistConfig, combineReducers({
         [authSlice.name]: persistAuthSliceReducer,
+        [portfolioSlice.name]: persistPortfolioSliceReducer,
         [cointrackApi.reducerPath]: cointrackApi.reducer,
     }))
    return  configureStore({

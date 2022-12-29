@@ -5,7 +5,7 @@ import {createEntityAdapter} from "@reduxjs/toolkit";
 import {api} from "../../../store/services/api";
 import {createSelector} from "reselect";
 import {AppState} from "../../../store/store";
-export interface Portfolios {
+export interface PortfoliosApi {
     rates:     Rates;
     exchanges: ExchangeElement[];
     wallets:   WalletElement[];
@@ -170,11 +170,16 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
 export const { useGetUserPortfolioQuery } = portfoliosApi
 
 export const selectPortfolios = portfoliosApi.endpoints.getUserPortfolio.select(undefined)
-
+//console.log(selectPortfolios());
 const selectAssets = createSelector(
     selectPortfolios,
     usersResult => usersResult?.data?.assets
 )
+// Can create a set of memoized selectors based on the location of this entity state
+export const portfolioSelectors = assetsAdapter.getSelectors()
+export const portfolioItemSelectors = assetsItemAdapter.getSelectors()
 
+// And then use the selectors to retrieve values
+//const allBooks = booksSelectors.selectAll(selectPortfolios.)
 // export const { selectAll: selectAllPortfolios, selectById: selectPortfolioById } =
 //     assetsAdapter.getSelectors(state => selectAssets(state as AppState) ?? assetsAdapter.getInitialState())

@@ -1,4 +1,4 @@
-import {BaseQueryFn, FetchArgs, FetchBaseQueryError} from '@reduxjs/toolkit/query/react';
+import {BaseQueryFn} from '@reduxjs/toolkit/query/react';
 import {AxiosError, AxiosRequestConfig} from 'axios';
 import axiosInstance from './axiosInstance';
 import {AppDispatch, AppState} from "../store";
@@ -8,7 +8,7 @@ interface CustomQueryArgs extends AxiosRequestConfig {
     onError?: (dispatch: AppDispatch, data: any) => Promise<void> | void;
 }
 
-export type CustomBaseQueryType = BaseQueryFn<string | CustomQueryArgs, unknown, unknown >;
+export type CustomBaseQueryType = BaseQueryFn<string | CustomQueryArgs, unknown, unknown>;
 
 export type QueryReturnValue<T = unknown, E = unknown, M = unknown> =
     | {
@@ -21,13 +21,13 @@ export type QueryReturnValue<T = unknown, E = unknown, M = unknown> =
     data: T
     meta?: M
 }
-export const axiosBaseQuery:CustomBaseQueryType = async (fetchArgs, {dispatch, getState}, extraOptions) => {
-   let result;
+export const axiosBaseQuery: CustomBaseQueryType = async (fetchArgs, {dispatch, getState}, extraOptions) => {
+    let result;
     try {
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${(getState() as AppState).auth.accessToken}`;
-        if( typeof fetchArgs === 'string'){
-             result = await axiosInstance.get(fetchArgs);
-        }else{
+        if (typeof fetchArgs === 'string') {
+            result = await axiosInstance.get(fetchArgs);
+        } else {
             const {onSuccess, onError, ...args} = fetchArgs
 
             result = await axiosInstance.request(args);
@@ -43,16 +43,15 @@ export const axiosBaseQuery:CustomBaseQueryType = async (fetchArgs, {dispatch, g
         }
 
 
-
         return {data: result.data};
     } catch (error: unknown) {
         const err = error as AxiosError;
         try {
-            if( typeof fetchArgs !== 'string'){
+            if (typeof fetchArgs !== 'string') {
                 fetchArgs.onError && (await fetchArgs.onError(dispatch, error));
             }
 
-        }catch (e) {
+        } catch (e) {
             console.error('Error in onError method', e);
             throw e;
         }

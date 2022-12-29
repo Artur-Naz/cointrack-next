@@ -3,7 +3,7 @@ import type {AppProps} from 'next/app'
 import {ColorModeContext, useMode} from '../config/theme'
 import {Provider} from 'react-redux';
 import { CssBaseline, ThemeProvider} from "@mui/material";
-import React from "react";
+import React, {useEffect} from "react";
 import {CacheProvider, EmotionCache} from "@emotion/react";
 import createEmotionCache from "../utils/createEmotionCache";
 import { wrapper } from "../store/store";
@@ -26,7 +26,9 @@ function App({
     const {store, props} = wrapper.useWrappedStore({pageProps});
     setupListeners(store.dispatch)
     const [theme, colorMode] = useMode();
-    persistStore(store).persist()
+    useEffect(() => {
+       // persistStore(store).dispatch({type: 'persist/REHYDRATE', payload: null, key:'s' })
+    }, [])
     ////<Loader> <CircularProgress disableShrink /></Loader>
     return <Provider store={store}>
         <ColorModeContext.Provider value={colorMode as any}>
