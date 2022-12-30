@@ -2,6 +2,7 @@ import {privateRoutes, publicRoutes} from "./config/routes";
 import {withAuth} from "next-auth/middleware";
 import {NextRequest, NextResponse} from "next/server";
 import {getToken} from "next-auth/jwt";
+import {decodeJwt} from "jose";
 
 
 
@@ -18,14 +19,15 @@ const AuthMiddleware = withAuth(
             authorized: ({ token }) => !!token
         },
     }) as any
-export default async function (req: NextRequest){
-    const token = await getToken({ req })
-    if(token && publicRoutes.includes(req.nextUrl.pathname)){
-        req.nextUrl.pathname = '/dashboard'
-       return  NextResponse.redirect(req.nextUrl)
+export default async function (request: NextRequest){
+    const token = await getToken({ req: request })
+
+    if(token && publicRoutes.includes(request.nextUrl.pathname)){
+        request.nextUrl.pathname = '/dashboard'
+       return  NextResponse.redirect(request.nextUrl)
     }
     //req.
-    return AuthMiddleware(req)
+    return AuthMiddleware(request)
 }
 export const config = { matcher: [
         ...privateRoutes,

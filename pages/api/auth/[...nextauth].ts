@@ -3,7 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 import {decodeJwt} from "jose";
 import {User} from "../../../store/slices/authSlice";
-import {NextResponse} from "next/server";
 
 // @ts-ignore
 export default NextAuth({

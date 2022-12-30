@@ -1,31 +1,27 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import {memo} from "react";
+import MenuIcon from '@mui/icons-material/Menu';
+import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import Link from "next/link";
-import {useAppDispatch, useAppSelector} from "../../../store/hooks";
-import {logout, selectAuthState, selectUser} from "../../../store/slices/authSlice";
-import {useProfileQuery} from "../../../modules/auth/api/authApi";
 import {signOut} from "next-auth/react";
-const pages = ['Dashboard', 'Home', 'index'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+import * as React from 'react';
+import {memo} from "react";
+
+import { useAppSelector} from "../../../store/hooks";
+import { selectUser} from "../../../store/slices/authSlice";
 
 function ResponsiveAppBar(props:any) {
-    const dispatch = useAppDispatch()
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-    const user = useAppSelector(selectUser)
+          const user = useAppSelector(selectUser)
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -44,7 +40,7 @@ function ResponsiveAppBar(props:any) {
     };
 
     return (
-        <AppBar {...props} position="sticky">
+            <AppBar {...props} position="sticky">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -104,6 +100,9 @@ function ResponsiveAppBar(props:any) {
                             <MenuItem  onClick={handleCloseNavMenu}>
                                 <Link href={'/'}><Typography textAlign="center">Main</Typography></Link>
                             </MenuItem>
+                            <MenuItem  onClick={handleCloseNavMenu}>
+                                <Link href={'/login'}><Typography textAlign="center">login</Typography></Link>
+                            </MenuItem>
                         </Menu>
                     </Box>
                     <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -134,6 +133,9 @@ function ResponsiveAppBar(props:any) {
                         </MenuItem>
                         <MenuItem  onClick={handleCloseNavMenu}>
                             <Link href={'/'}><Typography textAlign="center">Main</Typography></Link>
+                        </MenuItem>
+                        <MenuItem  onClick={handleCloseNavMenu}>
+                            <Link href={'/login'}><Typography textAlign="center">login</Typography></Link>
                         </MenuItem>
                     </Box>
 

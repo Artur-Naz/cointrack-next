@@ -79,6 +79,7 @@ export default function CustomizedAccordions() {
             }
         },
     })
+    console.log(portfolios);
     const [expanded, setExpanded] = React.useState<Record<string, boolean>>(portfolios.reduce<Record<string, boolean>>((acc, ex) => {
         acc[ex.id] = true
         return acc;

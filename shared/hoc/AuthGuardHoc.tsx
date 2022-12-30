@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
 import { privateRoutes, publicRoutes} from "../../config/routes";
-import {useSession} from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
 import {useEffect} from "react";
 import {useAppDispatch} from "../../store/hooks";
 import {login, logout} from "../../store/slices/authSlice";
@@ -10,27 +10,26 @@ export function AuthGuardHoc({ children }: { children: JSX.Element }) {
     const { status, data } = useSession()
     const dispatch = useAppDispatch()
     const router = useRouter()
-
     useEffect(() => {
-        if(status === "unauthenticated" && privateRoutes.includes(router.pathname)){
-            router.replace('/login')
-        }
-        if(status === "authenticated" && publicRoutes.includes(router.pathname)){
-            router.replace('/dashboard')
-        }
-        if(status === "unauthenticated"){
-            dispatch(logout())
-        }else if(status === "authenticated"){
-            const { user, accessToken, error } = data
-            if(error){
-                dispatch(logout())
-                router.replace('/login')
-            }else{
-                dispatch(login({accessToken, user}));
-            }
-        }
+     if(status === "authenticated" ){
+            const {accessToken, user} = data
+            dispatch(login({accessToken, user}))
+     }
+    },[status])
 
-    }, [status])
+    if(status === "authenticated" && data?.error){
+        signOut({redirect: false})
+        return null
+    }
+
+    if(status === "unauthenticated" && privateRoutes.includes(router.pathname)){
+        router.replace('/login')
+        return null
+    }
+    if(status === "authenticated" && publicRoutes.includes(router.pathname)){
+        router.replace('/dashboard')
+        return null
+    }
 
     return  children
 }
