@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material"
-import SelectedTimeLineList from "../shared/selectedTimeLineList"
+import SelectedTimeLineList from "../../../../shared/components/selectedTimeLineList"
 import Image from "next/image"
 
 interface IDashoardAnaliticsBlock{

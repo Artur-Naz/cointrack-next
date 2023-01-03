@@ -7,11 +7,7 @@ const instance = axios.create({
     baseURL: apiBaseUrl,
 })
 
-instance.interceptors.request.use(function (config: any) {
-    const token = localStorage.getItem("accessToken")
-    config.headers.Authorization = token ? `Bearer ${token}` : ""
-    return config
-})
+
 
 // Also add/ configure interceptors && all the other cool stuff
 instance.interceptors.response.use(

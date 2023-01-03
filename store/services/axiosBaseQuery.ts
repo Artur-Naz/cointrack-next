@@ -1,7 +1,9 @@
 import {BaseQueryFn} from '@reduxjs/toolkit/query/react';
-import {AxiosError, AxiosRequestConfig} from 'axios';
-import axiosInstance from './axiosInstance';
+import axios, {AxiosError, AxiosInstance, AxiosRequestConfig} from 'axios';
 import {AppDispatch, AppState} from "../store";
+import {getSession, signOut} from "next-auth/react";
+import {ThunkDispatch} from "redux-thunk";
+import {setToken} from "../slices/authSlice";
 
 interface CustomQueryArgs extends AxiosRequestConfig {
     onSuccess?: (dispatch: AppDispatch, data: any) => Promise<void> | void;
@@ -10,21 +12,42 @@ interface CustomQueryArgs extends AxiosRequestConfig {
 
 export type CustomBaseQueryType = BaseQueryFn<string | CustomQueryArgs, unknown, unknown>;
 
-export type QueryReturnValue<T = unknown, E = unknown, M = unknown> =
-    | {
-    error: E
-    data?: undefined
-    meta?: M
+const axiosInstance: AxiosInstance = axios.create({
+    baseURL: 'http://154.53.56.67:8008/api/v1/',
+    // withCredentials: true,
+});
+
+
+const onResponseFail = async (error: AxiosError & { config?: { alreadyRetried: boolean} }, dispatch: ThunkDispatch<any, any, any>) => {
+    if (error.response?.status === 401 && !error.config?.alreadyRetried) {
+
+        try {
+            const { accessToken, err } = await getSession() as any
+
+            if(!err){
+                error.config!.alreadyRetried = true
+                dispatch(setToken(accessToken))
+                return await axiosInstance.request(error.config!)
+            }
+
+        } catch (err: any) {
+            await signOut({ redirect: false })
+        }
+    }
+    return Promise.reject(error);
+};
+
+const onRequest = (config:  AxiosRequestConfig<any>, state: AppState) => {
+    console.log(state.auth.accessToken);
+    config.headers = { Authorization: `Bearer ${state.auth?.accessToken}` };
+    return config;
 }
-    | {
-    error?: undefined
-    data: T
-    meta?: M
-}
+
 export const axiosBaseQuery: CustomBaseQueryType = async (fetchArgs, {dispatch, getState}, extraOptions) => {
+    axiosInstance.interceptors.request.use((request) => onRequest(request, getState() as AppState))
+    axiosInstance.interceptors.response.use(r => r,(error) => onResponseFail(error,dispatch))
     let result;
     try {
-        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${(getState() as AppState).auth.accessToken}`;
         if (typeof fetchArgs === 'string') {
             result = await axiosInstance.get(fetchArgs);
         } else {

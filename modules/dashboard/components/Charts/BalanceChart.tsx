@@ -1,5 +1,5 @@
 import {Box, FormControl, FormGroup, Typography} from "@mui/material"
-import React, {useMemo, useState} from "react"
+import React, {memo, useMemo, useState} from "react"
 import SelectSmall from "../../../../shared/components/select"
 import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import moment from "moment/moment";
@@ -8,6 +8,9 @@ import CustomTooltip from "../../../../shared/components/chartDetales/CustomTool
 import CustomizedDot from "../../../../shared/components/chartDetales/CustomizedDot";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import {portfolioItemSelectors, portfolioSelectors, useGetUserPortfolioQuery} from "../../api/portfoliosApi";
+import {useAppSelector} from "../../../../store/hooks";
+import {selectSelectedPortfolio} from "../../slices/dashboardSlice";
 
 export type BalanceChartData = {
     name: string
@@ -15,21 +18,34 @@ export type BalanceChartData = {
 }
 
 
-const BalanceChart: React.FC<{ data: BalanceChartData[] }> = ({data = []}) => {
+const BalanceChart: React.FC = () => {
+    const selectedPortfolioId = useAppSelector(selectSelectedPortfolio)
+    const { rates } = useGetUserPortfolioQuery(undefined, {
+        selectFromResult: ({data, error, isLoading, isFetching}) => {
+            if(data){
+                if(selectedPortfolioId){
+                  const selectedPortfolio =  portfolioSelectors.selectById(data.portfolios, selectedPortfolioId) ||  portfolioItemSelectors.selectById(data.portfolioItems, selectedPortfolioId)
+                   return {
+                      rates:  selectedPortfolio?.rates.usd,
+                       error, isLoading
+                   }
+                }else{
+                    return {
+                        rates:  data.rates,
+                        error, isLoading
+                    }
+                }
+            }
 
-    const [activeIndex, setActiveIndex] = useState<number>(0)
 
-    data = [
-        {name: 'coin1', value: 250},
-        {name: 'coin2', value: 300},
-        {name: 'coin3', value: 400},
-        {name: 'coin4', value: 200},
-        {name: 'coin5', value: 350},
-        {name: 'coin6', value: 450},
-        {name: 'coin7', value: 500},
-        {name: 'coin8', value: 550},
-        {name: 'coin9', value: 350},
-    ];
+            return {
+                rates:  [[[]],[[]],[[]]],
+                error, isLoading
+            }
+        },
+    })
+
+    const data = useMemo(() => rates ? rates[0]?.map(([time, balance]) => ({name: time, value: balance})) : [], [rates])
 
     const colors: string[] = [
         '#6F52D8',
@@ -46,11 +62,6 @@ const BalanceChart: React.FC<{ data: BalanceChartData[] }> = ({data = []}) => {
         '#522CAF'
     ]
 
-    const percentData = useMemo<BalanceChartData[]>(() => {
-        const total = data.reduce((acc, el) => acc += el.value, 0);
-        return data.map((d: BalanceChartData) => ({name: d.name, value: 100 * d.value / total}))
-    }, [data])
-
     const [state, setState] = useState({
         usd: true,
         btc: false,
@@ -65,7 +76,7 @@ const BalanceChart: React.FC<{ data: BalanceChartData[] }> = ({data = []}) => {
     };
 
     const {usd, btc, eth} = state;
-    const error = [usd, btc, eth].filter((v) => v).length !== 2;
+
     return (
         <Box sx={{
             display: 'flex',
@@ -158,4 +169,4 @@ const BalanceChart: React.FC<{ data: BalanceChartData[] }> = ({data = []}) => {
     )
 }
 
-export default BalanceChart
+export default memo(BalanceChart)

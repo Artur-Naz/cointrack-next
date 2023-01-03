@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material"
-import DashboardBloksHeader from "../shared/dashboardBloksHeader"
+import DashboardBloksHeader from "../../../../shared/components/dashboardBloksHeader"
 import DashoardAnaliticsBlock from "./dashoardAnaliticsBlock"
 import analyticsBlockIcon from "../../assets/analyticsBlockIcon.svg"
 

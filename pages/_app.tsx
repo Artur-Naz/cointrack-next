@@ -2,11 +2,11 @@ import '../styles/globals.css'
 import type {AppProps} from 'next/app'
 import {ColorModeContext, useMode} from '../config/theme'
 import {Provider} from 'react-redux';
-import { CssBaseline, ThemeProvider} from "@mui/material";
+import {CssBaseline, ThemeProvider} from "@mui/material";
 import React, {useEffect} from "react";
 import {CacheProvider, EmotionCache} from "@emotion/react";
 import createEmotionCache from "../utils/createEmotionCache";
-import { wrapper } from "../store/store";
+import {wrapper} from "../store/store";
 import {setupListeners} from "@reduxjs/toolkit/query";
 import {PersistGate} from 'redux-persist/integration/react'
 import {persistStore} from "redux-persist";
@@ -27,7 +27,7 @@ function App({
     setupListeners(store.dispatch)
     const [theme, colorMode] = useMode();
     useEffect(() => {
-       // persistStore(store).dispatch({type: 'persist/REHYDRATE', payload: null, key:'s' })
+        // persistStore(store).dispatch({type: 'persist/REHYDRATE', payload: null, key:'s' })
     }, [])
     ////<Loader> <CircularProgress disableShrink /></Loader>
     return <Provider store={store}>
@@ -37,11 +37,11 @@ function App({
                 <ThemeProvider theme={theme as any}>
                     <CssBaseline/>
                     <SessionProvider session={pageProps.session}>
-                    <MainLayout disableLayout={(Component as any).disableLayout}>
-                        <AuthGuardHoc>
-                            <Component {...props.pageProps} />
-                        </AuthGuardHoc>
-                    </MainLayout>
+                        <MainLayout disableLayout={(Component as any).disableLayout}>
+                            <AuthGuardHoc>
+                                <Component {...props.pageProps} />
+                            </AuthGuardHoc>
+                        </MainLayout>
                     </SessionProvider>
                 </ThemeProvider>
             </CacheProvider>

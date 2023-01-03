@@ -1,12 +1,11 @@
 import { Box, Typography } from "@mui/material"
-import { makeStyles } from "@mui/styles";
 import Image from "next/image";
-import DashboardBloksHeader from "../shared/dashboardBloksHeader"
-import SelectedTimeLineList from "../shared/selectedTimeLineList"
 import DashboardCoinsBlock from "./dashboardCoinsBlock";
 import skullIcon from "../../assets/skull֊icon.svg"
 import scaleIcon from "../../assets/scale֊icon.svg"
 import graphIcon from "../../assets/graph֊icon.svg"
+import DashboardBloksHeader from "../../../../shared/components/dashboardBloksHeader";
+import SelectedTimeLineList from "../../../../shared/components/selectedTimeLineList";
 
 
 const DashboardCoins = () => {

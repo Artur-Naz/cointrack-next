@@ -17,7 +17,6 @@ import List from '@mui/material/List';
 import {tokens, useMode} from "../../../config/theme";
 import {Icon} from "@mui/material";
 import Link from "next/link";
-import CustomizedTreeView from "../../components/tree-view";
 
 const drawerWidth = 240;
 
@@ -113,7 +112,6 @@ function DR({open, handleDrawerClose}: any) {
         {/*        </ListItem>*/}
         {/*    ))}*/}
         {/*</List>*/}
-        {useMemo(() => <CustomizedTreeView></CustomizedTreeView>,[])}
     </Drawer>
 }
 export default memo(DR, (p,n) => {

@@ -17,10 +17,5 @@
     "unused-imports/no-unused-imports": "error",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error"
-  },
-  "parserOptions": {
-    "ecmaVersion": 2018,
-    "project": "./tsconfig.eslint.json",
-    "sourceType": "module"
   }
 }

@@ -1,8 +1,8 @@
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
-import DashboardBloksHeader from "../shared/dashboardBloksHeader"
 import closeIcon from "../../assets/close-icon.svg"
 import DashboardFuturesSmallBlok from "./dashboardFuturesSmallBlok"
+import DashboardBloksHeader from "../../../../shared/components/dashboardBloksHeader";
 
 const DashboardFutures = () => {
     return (

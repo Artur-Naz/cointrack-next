@@ -3,6 +3,9 @@ import { styled } from '@mui/material/styles';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import {useAppDispatch, useAppSelector} from "../../../../store/hooks";
+import {selectCurrentTab, setDashboardTab} from "../../slices/dashboardSlice";
+import {memo, useMemo} from "react";
 
 
 interface StyledTabsProps {
@@ -33,7 +36,7 @@ interface StyledTabProps {
     label: string;
 }
 
-export const StyledTab = styled((props: StyledTabProps) => (
+export const StyledTab = memo(styled((props: StyledTabProps) => (
     <Tab disableRipple {...props} />
 ))(({ theme }) => ({
     textTransform: 'none',
@@ -52,19 +55,34 @@ export const StyledTab = styled((props: StyledTabProps) => (
     '&.Mui-focusVisible': {
         backgroundColor: 'rgba(100, 95, 228, 0.32)',
     },
-}));
+})));
+function a11yProps(index: number) {
+    return {
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+    };
+}
+interface PortfolioTabsProps {
+    children?: React.ReactNode;
+    tabs: any[];
+}
+const PortfolioTabs: React.FC<PortfolioTabsProps> = ({ tabs}) =>  {
+    const currentTab = useAppSelector(selectCurrentTab);
+    const dispatch = useAppDispatch();
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        dispatch(setDashboardTab(newValue))
+    };
 
-const PortfolioTabs: React.FC<StyledTabsProps> = ({children, value, onChange}) =>  {
-
+    const tabElements = useMemo(() => tabs.map(({label}, index) => (<StyledTab key={index} label={label} {...a11yProps(index)}/>)), [])
     return (
         <StyledTabs
-            value={value}
-            onChange={onChange}
+            value={currentTab}
+            onChange={handleChange}
             aria-label="styled tabs example"
         >
-            {children}
+            {tabElements}
         </StyledTabs>
     );
 }
 
-export default PortfolioTabs
+export default memo(PortfolioTabs)

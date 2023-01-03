@@ -27,7 +27,7 @@ MyDocument.getInitialProps = async (ctx) => {
         originalRenderPage({
             enhanceApp: (App: any) =>
                 function EnhanceApp(props) {
-                    return <App emotionCache={cache} auth={Boolean(ctx.req?.headers?.cookie?.includes('accessToken'))} {...props} />;
+                    return <App emotionCache={cache} {...props} />;
                 },
         });
 

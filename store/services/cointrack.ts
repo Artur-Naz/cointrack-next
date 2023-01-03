@@ -1,7 +1,12 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import {axiosBaseQuery, axiosBaseQueryFactory} from "./axiosBaseQuery";
-import {tagTypes} from "./api";
-//http://154.53.56.67:8008/api/v1/portfolios/all
+import { createApi } from '@reduxjs/toolkit/query/react'
+import {axiosBaseQueryFactory} from "./axiosBaseQuery";
+export const tagTypes = {
+    auth: 'auth',
+    portfolios: 'portfolios'
+} as const;
+
+export type TagType = typeof tagTypes[keyof typeof tagTypes];
+
 // Define a service using a base URL and expected endpoints
 export const cointrackApi = createApi({
     reducerPath: 'cointrackApi',
@@ -11,6 +16,3 @@ export const cointrackApi = createApi({
     endpoints: () => ({}),
 
 })
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
-//export const { useGetUserPortfolioQuery } = cointrackApi

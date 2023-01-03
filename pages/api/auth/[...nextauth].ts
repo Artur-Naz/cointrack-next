@@ -4,7 +4,6 @@ import axios from "axios";
 import {decodeJwt} from "jose";
 import {User} from "../../../store/slices/authSlice";
 
-// @ts-ignore
 export default NextAuth({
     providers: [
         CredentialsProvider({

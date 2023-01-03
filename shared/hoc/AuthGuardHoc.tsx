@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
 import { privateRoutes, publicRoutes} from "../../config/routes";
-import {signOut, useSession} from "next-auth/react";
+import {signIn, signOut, useSession} from "next-auth/react";
 import {useEffect} from "react";
 import {useAppDispatch} from "../../store/hooks";
 import {login, logout} from "../../store/slices/authSlice";
@@ -15,6 +15,7 @@ export function AuthGuardHoc({ children }: { children: JSX.Element }) {
             const {accessToken, user} = data
             dispatch(login({accessToken, user}))
      }
+
     },[status])
 
     if(status === "authenticated" && data?.error){

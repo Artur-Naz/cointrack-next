@@ -1,12 +1,13 @@
 import {DataGrid, GridColDef, GridValueGetterParams} from "@mui/x-data-grid";
-import React from "react";
+import React, {memo} from "react";
 import {
-    Holding,
     portfolioHoldingSelectors,
     portfolioItemSelectors,
     portfolioSelectors,
     useGetUserPortfolioQuery
 } from "../../api/portfoliosApi";
+import {useAppSelector} from "../../../../store/hooks";
+import {selectSelectedPortfolio} from "../../slices/dashboardSlice";
 
 type HoldingsTableProps = {
    // rows : Array<Holding & { parentId: string }>
@@ -43,18 +44,44 @@ const columns: GridColDef[] = [
     },
 ];
 const HoldingsTable: React.FC<HoldingsTableProps> = ({  }) => {
-    const {holdings, isLoading, isFetching, error} = useGetUserPortfolioQuery(undefined, {
+
+    const selectedPortfolioId = useAppSelector(selectSelectedPortfolio)
+    const { holdings, isLoading, isFetching, error } = useGetUserPortfolioQuery(undefined, {
         selectFromResult: ({data, error, isLoading, isFetching}) => {
+            if(data){
+                if(selectedPortfolioId){
+                    const selectedPortfolio =  portfolioSelectors.selectById(data.portfolios, selectedPortfolioId) ||  portfolioItemSelectors.selectById(data.portfolioItems, selectedPortfolioId)
+                   if(selectedPortfolio){
+                       if('parentId' in selectedPortfolio){
+                           return {
+                               holdings:  portfolioHoldingSelectors.selectAll(data.holdings).filter(h => h.parentId === selectedPortfolio.id),
+                               error, isLoading, isFetching
+                           }
+                       }else{
+                           return {
+                               holdings:  portfolioHoldingSelectors.selectAll(data.holdings).filter(h => selectedPortfolio.itemIds.includes(h.parentId)),
+                               error, isLoading, isFetching
+                           }
+
+                       }
+
+                   }
+
+                }else{
+                    return {
+                        holdings:  portfolioHoldingSelectors.selectAll(data.holdings),
+                        error, isLoading, isFetching
+                    }
+                }
+            }
+
+
             return {
-                holdings: data ? portfolioHoldingSelectors.selectAll(data.holdings) : [],
-                error,
-                isLoading,
-                isFetching
+                holdings:  [],
+                error, isLoading, isFetching
             }
         },
     })
-
-
     return  <DataGrid
         sx={{
             height: '600px'
@@ -62,12 +89,12 @@ const HoldingsTable: React.FC<HoldingsTableProps> = ({  }) => {
         loading={isLoading}
         rows={holdings}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        pageSize={30}
+        rowsPerPageOptions={[5, 20, 30]}
         checkboxSelection
         disableSelectionOnClick
         experimentalFeatures={{ newEditingApi: true }}
     />
 }
 
-export default HoldingsTable
+export default memo(HoldingsTable)

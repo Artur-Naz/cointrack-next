@@ -1,25 +1,36 @@
-import React from "react";
+import React, {memo} from "react";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import {useAppSelector} from "../../../../store/hooks";
+import {selectCurrentTab} from "../../slices/dashboardSlice";
 
 interface PortfoliosTabPanelProps {
     children?: React.ReactNode;
     index: number;
-    value: number;
 }
+interface PortfoliosTabPanelsProps {
+    tabs: any[];
+}
+const PortfoliosTabPanel: React.FC<PortfoliosTabPanelProps> = ({children, index, ...other}) => {
+    const currentTab = useAppSelector(selectCurrentTab);
 
-export const PortfoliosTabPanel: React.FC<PortfoliosTabPanelProps> = (props) => {
-    const {children, value, index, ...other} = props;
-    if(value !== index) return null
+    if(currentTab !== index) return null
     return (
         <Box
             role="tabpanel"
-            hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
+            hidden={currentTab !== index}
+            id={`dashboard-tabpanel-${index}`}
+            aria-labelledby={`dashboard-tab-${index}`}
             {...other}
         >
             {children}
         </Box>
     );
 }
+
+const PortfoliosTabPanels: React.FC<PortfoliosTabPanelsProps> = ({tabs, ...other}) => {
+    return (<>
+        {tabs.map(({component}, index) =>  <PortfoliosTabPanel key={index} index={index}>{component}</PortfoliosTabPanel>)}
+    </>);
+}
+
+export default memo(PortfoliosTabPanels)

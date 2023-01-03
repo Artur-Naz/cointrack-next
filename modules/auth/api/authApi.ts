@@ -1,6 +1,6 @@
-import { api } from '../../../store/services/api'
+import { cointrackApi } from '../../../store/services/cointrack'
 
-const injectedRtkApi = api.injectEndpoints({
+const injectedRtkApi = cointrackApi.injectEndpoints({
     endpoints: (build) => ({
         GetUserProfile: build.query<
             GetUserProfileApiResponse,

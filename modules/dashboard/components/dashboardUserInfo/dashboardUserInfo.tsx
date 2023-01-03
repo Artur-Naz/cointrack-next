@@ -3,7 +3,7 @@ import DashboardCoinsBlock from "../dashboardCoins/dashboardCoinsBlock"
 import refreshICon from "../../assets/refresh-icon.svg"
 import Image from "next/image"
 import DashboardUserInfoChart from "./dashboardUserInfoChart"
-import SelectedTimeLineList from "../shared/selectedTimeLineList"
+import SelectedTimeLineList from "../../../../shared/components/selectedTimeLineList"
 
 
 const DashboardUserInfo = () => {
