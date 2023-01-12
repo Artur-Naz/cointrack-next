@@ -40,7 +40,8 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 // ** Global css styles
 import '../../styles/globals.css'
 import { Gateway } from '../services/socket.io'
-
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
   Component: NextPage
@@ -73,8 +74,7 @@ const SocketProvider: React.FC<{ children: ReactNode }> = ({children}) => {
 
       return () => gateway.unregisterHandlers()
     }
-    //persistStore(store).dispatch({type: 'persist/REHYDRATE', payload: null, key:'s' })
-  }, [data])
+  }, [data?.accessToken])
   return (<>{children}</>)
 }
 function App({
@@ -112,6 +112,7 @@ function App({
           <AuthGuardHoc>
             <SettingsProvider>
               <ThemeComponent >{getLayout(<Component {...pageProps} />)}</ThemeComponent>
+              <ToastContainer />
             </SettingsProvider>
           </AuthGuardHoc>
           </SocketProvider>
