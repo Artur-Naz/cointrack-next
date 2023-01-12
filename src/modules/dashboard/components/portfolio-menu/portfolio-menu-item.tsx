@@ -15,15 +15,19 @@ import {AccordionSummary} from "@mui/material";
 import { useLoginMutation } from '../../../auth/api/authApi'
 import LinearProgress from '@mui/material/LinearProgress'
 import Box from '@mui/material/Box'
+import {useAppSelector} from "../../../../store/hooks";
+import {selectJob} from "../../slices/dashboardSlice";
 
 type PortfolioMenuItemProps = {
     name?: string,
     image?: string,
     balance?: number
     sparkline?: number[],
-    sync: () => void
+    sync: () => void,
+    job?: string
 }
-function LinearBuffer() {
+function LinearBuffer({ job }: { job: string }) {
+  const cuerrentJob = useAppSelector(state => selectJob(state, job))
   const [progress, setProgress] = React.useState(0);
   const [buffer, setBuffer] = React.useState(10);
 
@@ -54,11 +58,14 @@ function LinearBuffer() {
 
   return (
     <Box sx={{ width: '100%' }}>
+      <Typography align={'left'} variant="subtitle1" noWrap>
+        {cuerrentJob?.state}
+      </Typography>
       <LinearProgress variant="buffer" value={progress} valueBuffer={buffer} />
     </Box>
   );
 }
-const PortfolioMenuItem: React.FC<PortfolioMenuItemProps> = ({name, image, sparkline, balance, sync}: any) => {
+const PortfolioMenuItem: React.FC<PortfolioMenuItemProps> = ({name, image, sparkline, balance, sync, job}) => {
     return (
         <Grid
             container component={Button} disableRipple spacing={0} alignContent={'flex-start'} justifyContent={'flex-start'}
@@ -103,7 +110,7 @@ const PortfolioMenuItem: React.FC<PortfolioMenuItemProps> = ({name, image, spark
                 </Sparklines>
             </Grid>
           <Grid item xs={12}>
-            <LinearBuffer></LinearBuffer>
+            {job && <LinearBuffer job={job}></LinearBuffer>}
           </Grid>
         </Grid>)
 }
@@ -152,6 +159,7 @@ return (<PortfolioMenuItem
         image={portfolioItem?.image}
         balance={balance}
         sparkline={sparkline}
+        job={portfolioItem?.jobId}
     />)
 })
 

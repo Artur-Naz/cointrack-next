@@ -42,6 +42,7 @@ import '../../styles/globals.css'
 import { Gateway } from '../services/socket.io'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import {useAppDispatch} from "../store/hooks";
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
   Component: NextPage
@@ -64,11 +65,13 @@ if (themeConfig.routingLoader) {
 }
 const SocketProvider: React.FC<{ children: ReactNode }> = ({children}) => {
   const {data} = useSession()
+  const dispatch = useAppDispatch()
   useEffect(() => {
     if (data?.accessToken) {
       const gateway = Gateway.SocketFactory(
         'http://localhost:8000',
-        data.accessToken
+        data.accessToken,
+        dispatch
       )
 
 

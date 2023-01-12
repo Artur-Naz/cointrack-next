@@ -1,12 +1,20 @@
 import { Manager, Socket } from 'socket.io-client'
 import { toast } from 'react-toastify'
+import {AppDispatch} from "../store/store";
+import {cointrackApi} from "./cointrack";
+import {assetsItemAdapter, GetUserPortfolioState, portfolioSelectors} from "../modules/dashboard/api/portfoliosApi";
+import {ThunkDispatch} from "redux-thunk";
+import {AnyAction} from "redux";
+import {updateJob} from "../modules/dashboard/slices/dashboardSlice";
 
 export class Gateway {
   static instance?: Gateway
   private manager!: Manager
   private socket!: Socket
-  private constructor(url: string, accessToken: string) {
+  private dispatch: ThunkDispatch<any, any, AnyAction>;
+  private constructor(url: string, accessToken: string,  dispatch: AppDispatch) {
     console.log('init socket');
+    this.dispatch = dispatch;
     this.manager = new Manager(url, {
       reconnectionDelayMax: 10000,
       transportOptions: {
@@ -21,11 +29,11 @@ export class Gateway {
     this.registerHandlers()
   }
 
-  static SocketFactory(url: string, accessToken: string){
+  static SocketFactory(url: string, accessToken: string, dispatch: AppDispatch){
     if(Gateway.instance){
       return Gateway.instance
     }else{
-      return new Gateway(url, accessToken)
+      return new Gateway(url, accessToken, dispatch)
     }
   }
   createSocket(namespace: string) {
@@ -51,38 +59,46 @@ export class Gateway {
       console.log('sync-wallet-progress', data);
     });
     //Wallet connect events
-    this.socket.on('connect.wallet.active', function(data) {
+    this.socket.on('connect.wallet.active', (data) => {
       console.log('connect.wallet.active', data);
       toast(`Job ${data.jobId} is active`)
+      this.dispatch(updateJob({ id: data.jobId, state: 'active'}))
     });
-    this.socket.on('connect.wallet.progress', function(data) {
+    this.socket.on('connect.wallet.progress', (data) => {
       console.log('connect.wallet.progress', data);
       toast(`Job ${data.jobId} is in progress ${data.progress}%`)
+      this.dispatch(updateJob({ id: data.jobId, state: data.progress }))
     });
-    this.socket.on('connect.wallet.fail', function(data) {
+    this.socket.on('connect.wallet.fail', (data) => {
       console.log('connect.wallet.fail', data);
       toast(`Job ${data.jobId} is failed with error:  ${data.error}`)
+      this.dispatch(updateJob({ id: data.jobId, state: 'fail' }))
     });
-    this.socket.on('connect.wallet.completed', function(data) {
+    this.socket.on('connect.wallet.completed', (data) => {
       console.log('connect.wallet.completed', data);
       toast(`Job ${data.jobId} is completed`)
+      this.dispatch(updateJob({ id: data.jobId, state: 'complete' }))
     });
     //Wallet sync events
-    this.socket.on('sync.wallet.active', function(data) {
+    this.socket.on('sync.wallet.active', (data) =>{
       console.log('sync.wallet.active', data);
       toast(`Job ${data.jobId} is active`)
+      this.dispatch(updateJob({ id: data.jobId, state: 'active'}))
     });
-    this.socket.on('sync.wallet.progress', function(data) {
+    this.socket.on('sync.wallet.progress', (data)  =>{
       console.log('sync.wallet.progress', data);
       toast(`Job ${data.jobId} is in progress ${data.progress}%`)
+      this.dispatch(updateJob({ id: data.jobId, state: data.progress }))
     });
-    this.socket.on('sync.wallet.fail', function(data) {
+    this.socket.on('sync.wallet.fail', (data) => {
       console.log('sync.wallet.fail', data);
       toast(`Job ${data.jobId} is failed with error:  ${data.error}`)
+      this.dispatch(updateJob({ id: data.jobId, state: 'fail' }))
     });
-    this.socket.on('sync.wallet.completed', function(data) {
+    this.socket.on('sync.wallet.completed', (data) => {
       console.log('sync.wallet.completed', data);
       toast(`Job ${data.jobId} is completed`)
+      this.dispatch(updateJob({ id: data.jobId, state: 'complete' }))
     });
   }
 

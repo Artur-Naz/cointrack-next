@@ -9,9 +9,16 @@ import {
   WalletItem
 } from './responses/portfolios.response'
 import { createEntityAdapter, EntityState } from '@reduxjs/toolkit'
-
-export type PortfolioEntity = (WalletElement | ExchangeElement) & { itemIds: string[] }
-export type PortfolioItemEntity = (ExchangeItem | WalletItem) & { parentId: string; image?: string }
+import {addJob, addJobs, Job, updateJob} from "../slices/dashboardSlice";
+export type PortfolioState = number | 'done' | 'success' | 'error'
+export type PortfolioEntity = (WalletElement | ExchangeElement) & { itemIds: string[], jobId: null | string }
+export type PortfolioItemEntity = (ExchangeItem | WalletItem) & { parentId: string; image?: string, jobId: null | string }
+export type GetUserPortfolioState = {
+  rates: Rates['usd']
+  portfolios: EntityState<PortfolioEntity>
+  portfolioItems: EntityState<PortfolioItemEntity>
+  holdings: EntityState<Holding & { parentId: string }>
+}
 export const assetsAdapter = createEntityAdapter<PortfolioEntity>({
   selectId: asset => asset.id,
   sortComparer: (a, b) => a.name.localeCompare(b.name)
@@ -28,13 +35,7 @@ export const holdingsAdapter = createEntityAdapter<Holding & { parentId: string 
 
 export const portfoliosApi = cointrackApi.injectEndpoints({
   endpoints: builder => ({
-    getUserPortfolio: builder.query<
-      {
-        rates: Rates['usd']
-        portfolios: EntityState<PortfolioEntity>
-        portfolioItems: EntityState<PortfolioItemEntity>
-        holdings: EntityState<Holding & { parentId: string }>
-      },
+    getUserPortfolio: builder.query<GetUserPortfolioState,
       any
     >({
       query: () => ({
@@ -58,6 +59,7 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
             res.exchange = asset.exchange
           }
           res.itemIds = asset.items.map((item: any) => item.id)
+          res.jobId = null;
 
           return res
         })
@@ -70,7 +72,7 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
               image = asset.exchange.image
             }
 
-            return { ...item, parentId: asset.id, image }
+            return { ...item, parentId: asset.id, image, jobId: null }
           })
         )
         const holdings = items.flatMap(item => item.holdings.map(holding => ({ ...holding, parentId: item.id })))
@@ -83,17 +85,34 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
         }
       }
     }),
-    syncPortfolioById: builder.mutation<any, string>({
+    syncPortfolioById: builder.mutation<{ jobId: string }[], string>({
       query: (id: string) => ({
         url: `portfolios/sync/${id}`,
         method: 'GET'
       }),
+      async onQueryStarted({ id, ...patch }, { dispatch, queryFulfilled }) {
+        const { data } = await queryFulfilled
+        const jobs = data.map<Job>(({jobId}) => ({ id: jobId, state: 0 }))
+        // dispatch(cointrackApi.util.updateQueryData('getUserPortfolio', undefined, (draft: GetUserPortfolioState) => {
+        //
+        //   assetsAdapter.updateMany(draft.portfolios,  jobs.map(({ jobId }) => ({ id: jobId, changes: { jobId: data.jobId }}))  })
+        // }))
+         dispatch(addJobs(jobs))
+      },
     }),
-    syncPortfolioItemById: builder.mutation<any, string>({
+    syncPortfolioItemById: builder.mutation<{ jobId: string }, string>({
       query: (id: string) => ({
         url: `portfolios/syncItem/${id}`,
         method: 'GET'
       }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        const { data } = await queryFulfilled
+        dispatch(cointrackApi.util.updateQueryData('getUserPortfolio', undefined, (draft: GetUserPortfolioState) => {
+
+          assetsItemAdapter.updateOne(draft.portfolioItems, { id, changes: { jobId: data.jobId }})
+        }))
+        dispatch(addJob({ id: data.jobId, state: 0 }))
+      },
     })
   })
 })
