@@ -42,6 +42,7 @@ import * as React from 'react'
 import { signIn } from 'next-auth/react'
 
 interface State {
+  email: string
   password: string
   showPassword: boolean
 }
@@ -69,6 +70,7 @@ const LoginPage = () => {
 
   // ** State
   const [values, setValues] = useState<State>({
+    email: '',
     password: '',
     showPassword: false
   })
@@ -91,8 +93,8 @@ const LoginPage = () => {
   const handleSubmit = async (event: MouseEvent<HTMLElement>) => {
     event.preventDefault()
     await signIn('credentials', {
-      email: 'testing@gmail.com',
-      password: '123456',
+      email: values.email,
+      password: values.password,
       redirect: false
     })
   }
@@ -181,7 +183,16 @@ return (
             <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
           </Box>
           <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-            <TextField autoFocus fullWidth id='email' label='Email' sx={{ marginBottom: 4 }} />
+            <FormControl fullWidth sx={{ marginBottom: 4 }}>
+              <InputLabel htmlFor='auth-login-email'>Email</InputLabel>
+              <OutlinedInput
+                label='Email'
+                value={values.email}
+                id='auth-login-email'
+                onChange={handleChange('email')}
+                type={'text'}
+              />
+            </FormControl>
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
               <OutlinedInput
