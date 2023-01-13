@@ -5,7 +5,7 @@ import {cointrackApi} from "./cointrack";
 import {assetsItemAdapter, GetUserPortfolioState, portfolioSelectors} from "../modules/dashboard/api/portfoliosApi";
 import {ThunkDispatch} from "redux-thunk";
 import {AnyAction} from "redux";
-import {updateJob} from "../modules/dashboard/slices/dashboardSlice";
+import {removeJob, updateJob} from "../modules/dashboard/slices/dashboardSlice";
 
 export class Gateway {
   static instance?: Gateway
@@ -55,9 +55,6 @@ export class Gateway {
       console.log(new Date().toISOString());
     });
 
-    this.socket.on('sync-wallet-progress', function(data) {
-      console.log('sync-wallet-progress', data);
-    });
     //Wallet connect events
     this.socket.on('connect.wallet.active', (data) => {
       console.log('connect.wallet.active', data);
@@ -83,22 +80,23 @@ export class Gateway {
     this.socket.on('sync.wallet.active', (data) =>{
       console.log('sync.wallet.active', data);
       toast(`Job ${data.jobId} is active`)
-      this.dispatch(updateJob({ id: data.jobId, state: 'active'}))
+      this.dispatch(updateJob({ id: data.portfolioId || data.portfolioItemId, state: 'active'}))
     });
     this.socket.on('sync.wallet.progress', (data)  =>{
       console.log('sync.wallet.progress', data);
       toast(`Job ${data.jobId} is in progress ${data.progress}%`)
-      this.dispatch(updateJob({ id: data.jobId, state: data.progress }))
+      this.dispatch(updateJob({ id: data.portfolioId || data.portfolioItemId, state: data.progress }))
     });
     this.socket.on('sync.wallet.fail', (data) => {
       console.log('sync.wallet.fail', data);
       toast(`Job ${data.jobId} is failed with error:  ${data.error}`)
-      this.dispatch(updateJob({ id: data.jobId, state: 'fail' }))
+      this.dispatch(updateJob({ id: data.portfolioId || data.portfolioItemId, state: 'fail' }))
     });
     this.socket.on('sync.wallet.completed', (data) => {
       console.log('sync.wallet.completed', data);
       toast(`Job ${data.jobId} is completed`)
-      this.dispatch(updateJob({ id: data.jobId, state: 'complete' }))
+      this.dispatch(updateJob({ id: data.portfolioId || data.portfolioItemId, state: 'complete' }))
+      setTimeout(() => this.dispatch(removeJob(data.portfolioId || data.portfolioItemId)), 30000)
     });
   }
 

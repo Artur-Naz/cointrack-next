@@ -9,7 +9,8 @@ import {
   WalletItem
 } from './responses/portfolios.response'
 import { createEntityAdapter, EntityState } from '@reduxjs/toolkit'
-import { addJob, addJobs, Job, updateJob } from '../slices/dashboardSlice'
+import { addJob, addJobs, updateJob } from '../slices/dashboardSlice'
+import {Job} from "../slices/entities/job.entity";
 export type PortfolioState = number | 'done' | 'success' | 'error'
 export type PortfolioEntity = (WalletElement | ExchangeElement) & { itemIds: string[]; jobId: null | string }
 export type PortfolioItemEntity = (ExchangeItem | WalletItem) & {
@@ -87,18 +88,16 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
         }
       }
     }),
-    syncPortfolioById: builder.mutation<{ jobId: string }[], string>({
+    syncPortfolioById: builder.mutation<{ jobId: string, portfolioId: string }[], string>({
       query: (id: string) => ({
         url: `portfolios/sync/${id}`,
         method: 'GET'
       }),
-      async onQueryStarted({ id, ...patch }, { dispatch, queryFulfilled }) {
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
         const { data } = await queryFulfilled
-        const jobs = data.map<Job>(({ jobId }) => ({ id: jobId, state: 5 }))
-        // dispatch(cointrackApi.util.updateQueryData('getUserPortfolio', undefined, (draft: GetUserPortfolioState) => {
-        //
-        //   assetsAdapter.updateMany(draft.portfolios,  jobs.map(({ jobId }) => ({ id: jobId, changes: { jobId: data.jobId }}))  })
-        // }))
+        console.log(data);
+        const jobs = data.map<Job>(({jobId, portfolioId}) => ({ id: portfolioId, jobId, state: 5 }))
+        console.log(jobs);
         dispatch(addJobs(jobs))
       }
     }),
@@ -109,12 +108,7 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
       }),
       async onQueryStarted(id, { dispatch, queryFulfilled }) {
         const { data } = await queryFulfilled
-        dispatch(
-          cointrackApi.util.updateQueryData('getUserPortfolio', undefined, (draft: GetUserPortfolioState) => {
-            assetsItemAdapter.updateOne(draft.portfolioItems, { id, changes: { jobId: data.jobId } })
-          })
-        )
-        dispatch(addJob({ id: data.jobId, state: 5 }))
+        dispatch(addJob({ id, jobId: data.jobId, state: 5 }))
       }
     })
   })

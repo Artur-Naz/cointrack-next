@@ -1,16 +1,12 @@
-import { createAction, createEntityAdapter, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
+import { createAction, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 import { HYDRATE } from 'next-redux-wrapper'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { AppState } from '../../../store/store'
 import { portfoliosApi } from '../api/portfoliosApi'
+import {Job, jobReducer} from "./entities/job.entity";
 
-export type Job = { id: string; state: PortfolioState }
-export type PortfolioState = number | 'wait' | 'active' | 'complete' | 'fail'
-export const jobAdapter = createEntityAdapter<Job>({
-  selectId: job => job.id,
-  sortComparer: (a, b) => a.id.localeCompare(b.id)
-})
+
 
 // Type for our state
 export interface DashboardState {
@@ -42,18 +38,7 @@ export const dashboardSlice = createSlice({
     setSelectedPortfolio(state, action: PayloadAction<string>) {
       state.selectedPortfolio = action.payload
     },
-    addJob(state, action: PayloadAction<Job>) {
-      jobAdapter.addOne(state.jobs, action.payload)
-    },
-    addJobs(state, action: PayloadAction<Job[]>) {
-      jobAdapter.addMany(state.jobs, action.payload)
-    },
-    updateJob(state, action: PayloadAction<{ id: string; state: PortfolioState }>) {
-      jobAdapter.updateOne(state.jobs, { id: action.payload.id, changes: { state: action.payload.state } })
-    },
-    removeJob(state, action: PayloadAction<string>) {
-      jobAdapter.removeOne(state.jobs, action.payload)
-    }
+    ...jobReducer
   },
 
   extraReducers: builder => {
@@ -76,11 +61,10 @@ export const dashboardSlice = createSlice({
   }
 })
 
-export const { toggle, setDashboardTab, setSelectedPortfolio, updateJob, addJob, addJobs } = dashboardSlice.actions
+export const { toggle, setDashboardTab, setSelectedPortfolio, updateJob, addJob, addJobs, removeJob } = dashboardSlice.actions
 
 export const selectCurrentTab = (state: AppState) => state.dashboard.selectedTab
 export const selectSelectedPortfolio = (state: AppState) => state.dashboard.selectedPortfolio
 
-export const selectJob = (state: AppState, id: string) => jobAdapter.getSelectors().selectById(state.dashboard.jobs, id)
 
 export default persistReducer({ key: dashboardSlice.name, storage }, dashboardSlice.reducer)
