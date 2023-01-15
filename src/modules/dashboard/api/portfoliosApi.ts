@@ -9,20 +9,21 @@ import {
   WalletItem
 } from './responses/portfolios.response'
 import { createEntityAdapter, EntityState } from '@reduxjs/toolkit'
-import { addJob, addJobs, updateJob } from '../slices/dashboardSlice'
-import {Job} from "../slices/entities/job.entity";
-export type PortfolioState = number | 'done' | 'success' | 'error'
-export type PortfolioEntity = (WalletElement | ExchangeElement) & { itemIds: string[]; jobId: null | string }
+import { Job, PortfolioState, upsertJob, upsertJobs } from '../slices/jobSlice'
+
+export type PortfolioEntity = (WalletElement | ExchangeElement) & { itemIds: string[] }
 export type PortfolioItemEntity = (ExchangeItem | WalletItem) & {
   parentId: string
   image?: string
-  jobId: null | string
 }
+export type Rate = { timestamp: number; usd: number; btc?: number; eth?: number }
+export type PortfolioHoldingEntity = Holding & { parentId: string }
+export type RatesEntity = { id: string; minutely: Rate[]; hourly: Rate[]; daily: Rate[] }
 export type GetUserPortfolioState = {
-  rates: Rates['usd']
+  rates: EntityState<RatesEntity>
   portfolios: EntityState<PortfolioEntity>
   portfolioItems: EntityState<PortfolioItemEntity>
-  holdings: EntityState<Holding & { parentId: string }>
+  holdings: EntityState<PortfolioHoldingEntity>
 }
 export const assetsAdapter = createEntityAdapter<PortfolioEntity>({
   selectId: asset => asset.id,
@@ -33,11 +34,22 @@ export const assetsItemAdapter = createEntityAdapter<PortfolioItemEntity>({
   sortComparer: (a, b) => a.name.localeCompare(b.name)
 })
 
-export const holdingsAdapter = createEntityAdapter<Holding & { parentId: string }>({
-  selectId: asset => asset.id,
+export const holdingsAdapter = createEntityAdapter<PortfolioHoldingEntity>({
+  selectId: holding => holding.id,
   sortComparer: (a, b) => a.currency.localeCompare(b.currency)
 })
 
+export const ratesAdapter = createEntityAdapter<RatesEntity>({
+  selectId: rates => rates.id,
+  sortComparer: (a, b) => a.id.localeCompare(b.id)
+})
+
+const transformRates = (id: string, rates: Rates) => ({
+  id,
+  minutely: rates?.[0]?.map(([timestamp, usd, btc, eth]) => ({ timestamp, usd, btc, eth })) ?? [],
+  hourly: rates?.[1]?.map(([timestamp, usd, btc, eth]) => ({ timestamp, usd, btc, eth })) ?? [],
+  daily: rates?.[2]?.map(([timestamp, usd, btc, eth]) => ({ timestamp, usd, btc, eth })) ?? []
+})
 export const portfoliosApi = cointrackApi.injectEndpoints({
   endpoints: builder => ({
     getUserPortfolio: builder.query<GetUserPortfolioState, any>({
@@ -49,66 +61,74 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
 
       transformResponse(baseQueryReturnValue: PortfoliosResponse, meta, arg) {
         const assets = [...baseQueryReturnValue.exchanges, ...baseQueryReturnValue.wallets]
+        const rates: RatesEntity[] = []
+        const items: PortfolioItemEntity[] = []
+        const holdings: PortfolioHoldingEntity[] = []
         const portfolios = assets.map<PortfolioEntity>(asset => {
-          const { id, rates, name } = asset
+          const { id, name } = asset
           const res: any = {
             id,
-            name,
-            rates
+            name
           }
           if ('wallet' in asset) {
             res.wallet = asset.wallet
           } else {
             res.exchange = asset.exchange
           }
-          res.itemIds = asset.items.map((item: any) => item.id)
-          res.jobId = null
-
-          return res
-        })
-        const items = assets.flatMap(asset =>
-          asset.items.map(item => {
+          res.itemIds = asset.items.map((item: any) => {
             let image
             if ('wallet' in asset) {
               image = asset.wallet.image
             } else {
               image = asset.exchange.image
             }
-
-            return { ...item, parentId: asset.id, image, jobId: null }
+            item.rates && rates.push(transformRates(item.id, item.rates))
+            items.push({ ...item, parentId: asset.id, image, rates: undefined })
+            holdings.push(...items.flatMap(item => item.holdings.map(holding => ({ ...holding, parentId: item.id }))))
+            return item.id
           })
-        )
-        const holdings = items.flatMap(item => item.holdings.map(holding => ({ ...holding, parentId: item.id })))
-
+          asset.rates && rates.push(transformRates(id, asset.rates))
+          return res
+        })
+        baseQueryReturnValue.rates && rates.push(transformRates('all', baseQueryReturnValue.rates))
         return {
-          rates: baseQueryReturnValue.rates.usd,
+          rates: ratesAdapter.setAll(ratesAdapter.getInitialState(), rates),
           portfolios: assetsAdapter.setAll(assetsAdapter.getInitialState(), portfolios),
-          portfolioItems: assetsItemAdapter.setAll(assetsItemAdapter.getInitialState(), items as any),
+          portfolioItems: assetsItemAdapter.setAll(assetsItemAdapter.getInitialState(), items),
           holdings: holdingsAdapter.setAll(holdingsAdapter.getInitialState(), holdings)
         }
       }
     }),
-    syncPortfolioById: builder.mutation<{ jobId: string, portfolioId: string }[], string>({
+    syncPortfolioById: builder.mutation<{ jobId: string; state: PortfolioState }[], string>({
       query: (id: string) => ({
         url: `portfolios/sync/${id}`,
         method: 'GET'
       }),
       async onQueryStarted(id, { dispatch, queryFulfilled }) {
-        const { data } = await queryFulfilled
-        console.log(data);
-        const jobs = data.map<Job>(({jobId, portfolioId}) => ({ id: portfolioId, jobId, state: 5 }))
-        console.log(jobs);
-        dispatch(addJobs(jobs))
+       try{
+         const { data } = await queryFulfilled
+         const jobs = data.map<Job>(({ jobId, state }) => ({ id: jobId, state, progress: 0 }))
+         dispatch(upsertJobs(jobs))
+       }catch (e) {
+
+       }
+
       }
     }),
-    syncPortfolioItemById: builder.mutation<{ jobId: string }, string>({
+    syncPortfolioItemById: builder.mutation<{ jobId: string; state: PortfolioState }, string>({
       query: (id: string) => ({
         url: `portfolios/syncItem/${id}`,
         method: 'GET'
       }),
+
       async onQueryStarted(id, { dispatch, queryFulfilled }) {
-        const { data } = await queryFulfilled
-        dispatch(addJob({ id, jobId: data.jobId, state: 5 }))
+        try{
+          const { data } = await queryFulfilled
+          dispatch(upsertJob({ id: data.jobId, state: data.state, progress: 0 }))
+        }catch{
+
+        }
+
       }
     })
   })
@@ -121,3 +141,7 @@ export const { useGetUserPortfolioQuery, useSyncPortfolioByIdMutation, useSyncPo
 export const portfolioSelectors = assetsAdapter.getSelectors()
 export const portfolioItemSelectors = assetsItemAdapter.getSelectors()
 export const portfolioHoldingSelectors = holdingsAdapter.getSelectors()
+export const portfolioRatesSelectors = ratesAdapter.getSelectors()
+
+export const SelectPortfolioRatesById = (rates: EntityState<RatesEntity>, id: string) =>
+  ratesAdapter.getSelectors().selectById(rates, id)

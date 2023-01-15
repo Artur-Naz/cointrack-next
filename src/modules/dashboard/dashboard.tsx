@@ -22,6 +22,9 @@ import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import SalesByCountries from '../../views/dashboard/SalesByCountries'
 import DepositWithdraw from '../../views/dashboard/DepositWithdraw'
 import Table from '../../views/dashboard/Table'
+import CardHeader from '@mui/material/CardHeader'
+import CardContent from '@mui/material/CardContent'
+import Card from '@mui/material/Card'
 
 const MainDashboard = memo(() => (
   <Grid container spacing={6}>
@@ -117,13 +120,15 @@ const Dashboard: React.FC = () => {
         <Grid xs={6} lg={3} item container spacing={2}>
           <Grid item xs={12}>
             <CustomizedAccordions />
-          </Grid>
-          <Grid item xs={12}>
-            <Paper>
-              <Typography>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Necessitatibus, tempore.
-              </Typography>
-            </Paper>
+            <Card sx={{mt:5}}>
+              <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
+                <Grid container spacing={[5, 0]}>
+                  <Typography>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Necessitatibus, tempore.
+                  </Typography>
+                </Grid>
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
         <Grid xs={6} lg={9} direction={'column'} item container spacing={2}>

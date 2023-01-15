@@ -32,7 +32,8 @@ const styles = {
   maxHeight: '100vh',
   '& .MuiMenuItem-root:last-of-type': {
     border: 0
-  }
+  },
+
 }
 
 // ** Styled PerfectScrollbar component
@@ -93,12 +94,20 @@ function CustomizedAccordions() {
           </>
         }
       />
-      <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
-        <Grid container spacing={[5, 0]}>
+      <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important`,px: theme => `${theme.spacing(0)} !important` }}>
+        <Grid container spacing={[5, 0]} >
           <PerfectScrollbar
-            options={{ wheelPropagation: false, suppressScrollX: true }}
+            options={{ wheelPropagation: false, suppressScrollX: true, }}
             sx={{
-              minHeight: 300
+              maxHeight: 'calc(100vh - 250px)',
+              width: '100%',
+              padding: theme => theme.spacing(0,5)
+              // '& .ps': {
+              //   overflowX: 'auto !Important',
+              // },
+              // '& .ps__rail-y': {
+              //   right: '-16px !Important',
+              // }
             }}
           >
             <PortfolioAccordion portfolios={selectResult} />

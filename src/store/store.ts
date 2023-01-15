@@ -15,6 +15,7 @@ import {
 import storage from 'redux-persist/lib/storage'
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import persistDashboardSliceReducer, {dashboardSlice} from "../modules/dashboard/slices/dashboardSlice";
+import persistJobSliceReducer, {jobSlice} from "../modules/dashboard/slices/jobSlice";
 
 const persistConfig = {
     key: 'root',
@@ -29,6 +30,7 @@ const makeStore = () =>{
     const persistedReducer = persistReducer(persistConfig, combineReducers({
         [authSlice.name]: persistAuthSliceReducer,
         [dashboardSlice.name]: persistDashboardSliceReducer,
+        [jobSlice.name]: persistJobSliceReducer,
         [cointrackApi.reducerPath]: cointrackApi.reducer,
     }))
 

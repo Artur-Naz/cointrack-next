@@ -8,6 +8,16 @@ import {
 } from "../../api/portfoliosApi";
 import {useAppSelector} from "../../../../store/hooks";
 import {selectSelectedPortfolio} from "../../slices/dashboardSlice";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import IconButton from "@mui/material/IconButton";
+import DotsVertical from "mdi-material-ui/DotsVertical";
+import CardContent from "@mui/material/CardContent";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import MenuUp from "mdi-material-ui/MenuUp";
+import Avatar from "@mui/material/Avatar";
+import LinearProgress from "@mui/material/LinearProgress";
 
 type HoldingsTableProps = {
 
@@ -84,9 +94,20 @@ const HoldingsTable: React.FC<HoldingsTableProps> = ({  }) => {
         },
     })
 
-return  <DataGrid
+  return  <Card>
+    <CardHeader
+      title='Holdings'
+      titleTypographyProps={{ sx: { lineHeight: '1.6 !important', letterSpacing: '0.15px !important' } }}
+      action={
+        <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <DotsVertical />
+        </IconButton>
+      }
+    />
+    <CardContent sx={{ pt: theme => `${theme.spacing(2.25)} !important` }}>
+      <DataGrid
         sx={{
-            height: '600px'
+          height: '600px'
         }}
         loading={isLoading}
         rows={holdings}
@@ -96,7 +117,9 @@ return  <DataGrid
         checkboxSelection
         disableSelectionOnClick
         experimentalFeatures={{ newEditingApi: true }}
-    />
+      />
+    </CardContent>
+  </Card>
 }
 
 export default memo(HoldingsTable)

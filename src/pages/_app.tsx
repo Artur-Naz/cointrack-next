@@ -43,6 +43,7 @@ import { Gateway } from '../services/socket.io'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import {useAppDispatch} from "../store/hooks";
+import dynamic from "next/dynamic";
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
   Component: NextPage

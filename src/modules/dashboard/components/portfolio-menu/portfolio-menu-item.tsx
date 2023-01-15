@@ -1,25 +1,32 @@
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import * as React from 'react'
-import { Sparklines, SparklinesLine } from 'react-sparklines'
+import {Sparklines, SparklinesBars, SparklinesLine} from 'react-sparklines'
 import { Image } from 'mui-image'
 import Grid from '@mui/material/Grid'
 import {
   portfolioItemSelectors,
-  portfolioSelectors,
+  portfolioRatesSelectors,
+  portfolioSelectors, SelectPortfolioRatesById,
   useGetUserPortfolioQuery,
   useSyncPortfolioByIdMutation,
   useSyncPortfolioItemByIdMutation
 } from '../../api/portfoliosApi'
 import { memo, useCallback, useEffect } from 'react'
-import { AccordionSummary, CircularProgress } from '@mui/material'
 import { useLoginMutation } from '../../../auth/api/authApi'
 import LinearProgress from '@mui/material/LinearProgress'
 import Box from '@mui/material/Box'
 import { useAppSelector } from '../../../../store/hooks'
-import { selectJob } from '../../slices/dashboardSlice'
-import { isNumber } from 'lodash'
-import {selectJobById} from "../../slices/entities/job.entity";
+import { selectJobById } from '../../slices/jobSlice'
+import IconButton from '@mui/material/IconButton';
+import ErrorTwoToneIcon from '@mui/icons-material/ErrorTwoTone';
+import CheckCircleTwoToneIcon from '@mui/icons-material/CheckCircleTwoTone';
+import SyncTwoToneIcon from '@mui/icons-material/SyncTwoTone';
+import HourglassTopTwoToneIcon from '@mui/icons-material/HourglassTopTwoTone';
+import {styled, useTheme} from "@mui/material/styles";
+import ChevronUp from "mdi-material-ui/ChevronUp";
+import Avatar from "@mui/material/Avatar";
+import MuiAccordionSummary, {AccordionSummaryProps} from "@mui/material/AccordionSummary";
 
 type PortfolioMenuItemProps = {
   id: string
@@ -27,95 +34,158 @@ type PortfolioMenuItemProps = {
   image?: string
   balance?: number
   sparkline?: number[]
-  sync: () => void
+  sync: (e: MouseEvent<HTMLButtonElement>) => void
   syncing: boolean
   job?: string | null
 }
 function LinearBuffer({ id }: { id: string }) {
-  const cuerrentJob = useAppSelector(state => selectJobById(state, id))
-  const progress = isNumber(cuerrentJob?.state) ? cuerrentJob?.state : null
-  return <Box sx={{ width: '100%' }}>
-    <span>{cuerrentJob?.state}</span>
-    {progress && <LinearProgress variant='determinate' value={progress} />}
-  </Box>
-}
-const SyncButton: React.FC<{ job?: string; sync: () => void }> = ({ job, sync }) => {
-  const cuerrentJob = useAppSelector(state => selectJob(state, job!))
-  return <Button onClick={sync}>{job ? <CircularProgress color='inherit' /> : 'sync'}</Button>
-}
-const PortfolioMenuItem: React.FC<PortfolioMenuItemProps> = ({ id, name, image, sparkline, balance, sync, job }) => {
-
-
+  const currentJob = useAppSelector(state => selectJobById(state, id))
   return (
-    <Grid
-      container
-      component={Button}
-      disableRipple
-      spacing={0}
-      alignContent={'flex-start'}
-      justifyContent={'flex-start'}
-      alignItems={'center'}
-    >
-      <Grid item xs={1} justifySelf={'end'}>
-        <Image
-          fit={'contain'}
-          bgColor={'transparent'}
-          height={20}
-          shiftDuration={400}
-          easing={'ease-in-out'}
-          shift='right'
-          distance={16}
-          src={image || ''}
-          showLoading
-        />
-      </Grid>
-      <Button disabled={false} onClick={sync}>
-        sync
-      </Button>
-      <Grid item xs={9}>
-        <Typography align={'left'} variant='subtitle1' noWrap>
-          {name}
-        </Typography>
-      </Grid>
-      <Grid item xs={2}>
-        <Typography variant='h5' color={'green'}>
-          4.85%
-        </Typography>
-      </Grid>
-      <Grid item xs={5}>
-        <Typography variant='h5' align={'left'} color={'white'}>
-          {balance}$
-        </Typography>
-      </Grid>
-      <Grid item xs={7}>
-        <Sparklines style={{ paddingLeft: '6px', height: 16, width: '100%' }} data={sparkline}>
-          <SparklinesLine color='green' />
-          {/*<SparklinesSpots style={{ fill: "#56b45d" }} />*/}
-        </Sparklines>
-      </Grid>
-        <Grid item xs={12}>
-          <LinearBuffer id={id}></LinearBuffer>
-        </Grid>
-    </Grid>
+    <Box sx={{ width: '100%' }}>
+      {currentJob?.state === 'active' && <LinearProgress variant='determinate' value={currentJob.progress} />}
+    </Box>
   )
 }
+const SyncButton: React.FC<{ jobId?:string,  sync: (e:any) => void, syncing: boolean }> = ({ sync, syncing, jobId }) => {
+  const currentJob = jobId ? useAppSelector(state => selectJobById(state, jobId)) : undefined
+  let icon;
+  switch (currentJob?.state) {
+    case 'waiting':
+      icon = <HourglassTopTwoToneIcon/>
+      break;
+    case 'active':
+      icon = <HourglassTopTwoToneIcon color={'primary'}/>
+      break;
+    case 'completed':
+      icon = <CheckCircleTwoToneIcon color={'success'}/>
+      break;
+    case 'failed':
+      icon = <ErrorTwoToneIcon color={'error'}/>;
+      break;
+    default:
+      icon = <SyncTwoToneIcon/>
+  }
+
+  return <IconButton size={'small'} disabled={syncing || !!currentJob} onClick={sync}>
+    {icon}
+  </IconButton>
+}
+const AccordionSummary = styled((props: AccordionSummaryProps) => <MuiAccordionSummary expandIcon={null} {...props} />)(
+  ({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, .05)' : 'rgba(0, 0, 0, .03)',
+    padding: '0 !Important',
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+      transform: 'rotate(90deg)'
+    },
+    '& .MuiAccordionSummary-content': {
+      margin: 0,
+    }
+  })
+)
+const PortfolioMenuItem: React.FC<PortfolioMenuItemProps> = ({ id, name, image, sparkline, balance, sync, syncing }) => {
+  const theme = useTheme()
+  const formattedBalance = balance?.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  })
+
+  return ( <Box
+    sx={{
+      display: 'flex',
+      flexGrow: 1,
+      alignItems: 'center',
+      padding: theme.spacing(1,5),
+      //...(index !== data.length - 1 ? { mb: 5.875 } : {})
+    }}
+  >
+    <Box sx={{ width: 38,
+      height: 38,
+      marginRight: 3,
+      fontSize: '1rem',
+      color: 'common.white'}}>
+      <Image
+        fit={'contain'}
+        bgColor={'transparent'}
+        height={38}
+        width={38}
+        shiftDuration={400}
+        easing={'ease-in-out'}
+        shift='right'
+        distance={16}
+        src={image || ''}
+        showLoading
+      />
+    </Box>
+    <Box
+      sx={{
+        display: 'flex',
+        flexWrap: 'nowrap',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'column',
+        flexGrow:1,
+      }}
+    >
+      <Box sx={{ marginRight: 2, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width:'100%', alignItems: 'center' }}>
+        <Typography sx={{ flexGrow:5, fontWeight: 600, letterSpacing: '0.25px', maxWidth: '50%', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formattedBalance}</Typography>
+
+        <Box sx={{ display: 'flex', flexShrink:1, justifyContent: 'space-between'}}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <ChevronUp sx={{ color: 'success.main', fontWeight: 600 }} />
+            <Typography
+              variant='caption'
+              sx={{
+                fontWeight: 600,
+                lineHeight: 1.5,
+                color:  'success.main'
+              }}
+            >
+              3.4%
+            </Typography>
+          </Box>
+          <SyncButton sync={sync} syncing={syncing} jobId={id}/>
+        </Box>
+
+      </Box>
+
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width:'100%' }}>
+        <Typography variant='caption' sx={{ flexGrow:3,lineHeight: 1.5 }}>
+          {name}
+        </Typography>
+
+        <Sparklines style={{ flexGrow:1, height: '16px', }} data={sparkline}>
+          <SparklinesLine color='#56CA00' />
+          {/*<SparklinesSpots style={{ fill: "#56b45d" }} />*/}
+        </Sparklines>
+      </Box>
+    </Box>
+  </Box>)
+}
 export const PortfolioMenuItemSummary = memo(({ id }: any) => {
-  const { portfolio } = useGetUserPortfolioQuery(undefined, {
+  const { portfolio, rates } = useGetUserPortfolioQuery(undefined, {
     selectFromResult: ({ data }) => {
       return {
-        portfolio: data ? portfolioSelectors.selectById(data.portfolios, id) : null
+        portfolio: data ? portfolioSelectors.selectById(data.portfolios, id) : null,
+        rates: data ? portfolioRatesSelectors.selectById(data.rates, id) : null
       }
     }
   })
   const [sync, { isLoading: syncing }] = useSyncPortfolioByIdMutation()
-  const syncHandler = useCallback(() => sync(id), [id])
+  const syncHandler = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation()
+      sync(id)
+    },
+    [id]
+  )
 
   if (!portfolio) return null
 
-  const [general = [[0, 0]]] = portfolio?.rates.usd
   const image = 'exchange' in portfolio ? portfolio.exchange.image : ''
-  const sparkline = general?.map(s => s[1]) ?? []
-  const balance = general?.[0] ? general[0][1] : 0
+  const sparkline = rates?.minutely?.map(s => s.usd || 0) ?? []
+  const balance = rates?.minutely?.[0]?.usd ?? 0
 
   return (
     <AccordionSummary>
@@ -132,24 +202,28 @@ export const PortfolioMenuItemSummary = memo(({ id }: any) => {
   )
 })
 export const PortfolioMenuItemDetails = memo(({ id }: any) => {
-  const { portfolioItem } = useGetUserPortfolioQuery(undefined, {
+  const { portfolioItem, rates  } = useGetUserPortfolioQuery(undefined, {
     selectFromResult: ({ data }) => {
       return {
-        portfolioItem: data ? portfolioItemSelectors.selectById(data.portfolioItems, id) : null
+        portfolioItem: data ? portfolioItemSelectors.selectById(data.portfolioItems, id) : null,
+        rates: data ? SelectPortfolioRatesById(data.rates, id) : null
       }
     }
   })
   const [sync, { isLoading }] = useSyncPortfolioItemByIdMutation()
 
-  const syncHandler = useCallback(() => sync(id), [id])
+  const syncHandler = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation()
+      sync(id)
+    },
+    [id]
+  )
 
   if (!portfolioItem) return null
 
-
-
-  const [general = [[0, 0]]] = portfolioItem.rates.usd!
-  const sparkline = general?.map(s => s[1] || 0) ?? []
-  const balance = general?.[0] ? general[0][1] : 0
+  const sparkline = rates?.minutely?.map(s => s.usd) ?? []
+  const balance = rates?.minutely?.[0]?.usd ?? 0
 
   return (
     <PortfolioMenuItem

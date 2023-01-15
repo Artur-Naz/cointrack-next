@@ -60,9 +60,7 @@ export interface Position {
     liquidationPrice: number;
 }
 
-export interface Rates {
-    usd: Array<Array<number[]>>;
-}
+export type Rates = number[][][]
 
 export interface WalletElement {
     rates:  Rates;
