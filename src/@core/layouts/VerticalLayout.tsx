@@ -10,21 +10,21 @@ import Box, { BoxProps } from '@mui/material/Box'
 import ArrowUp from 'mdi-material-ui/ArrowUp'
 
 // ** Theme Config Import
-import themeConfig from 'src/configs/themeConfig'
+// themeConfig from 'src/configs/themeConfig'
 
 // ** Type Import
 import { LayoutProps } from 'src/@core/layouts/types'
 
 // ** Components
 import AppBar from './components/vertical/appBar'
-import Navigation from './components/vertical/navigation'
+
+//import Navigation from './components/vertical/navigation'
 import Footer from './components/shared-components/footer'
 import ScrollToTop from 'src/@core/components/scroll-to-top'
 
 // ** Styled Component
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
-
 
 const VerticalLayoutWrapper = styled('div')({
   height: '100%',
@@ -66,7 +66,8 @@ const VerticalLayout = (props: LayoutProps) => {
 
   // ** Vars
   const { contentWidth } = settings
-  const navWidth = themeConfig.navigationSize
+
+  //const navWidth = themeConfig.navigationSize
 
   // ** States
   const [navVisible, setNavVisible] = useState<boolean>(false)
@@ -77,45 +78,44 @@ const VerticalLayout = (props: LayoutProps) => {
   return (
     <>
       <PerfectScrollbar>
-      <VerticalLayoutWrapper className='layout-wrapper'>
-        {/* Navigation Menu*/}
-        {/*<Navigation*/}
-        {/*  navWidth={navWidth}*/}
-        {/*  navVisible={navVisible}*/}
-        {/*  setNavVisible={setNavVisible}*/}
-        {/*  toggleNavVisibility={toggleNavVisibility}*/}
-        {/*  {...props}*/}
-        {/*/>*/}
+        <VerticalLayoutWrapper className='layout-wrapper'>
+          {/* Navigation Menu*/}
+          {/*<Navigation*/}
+          {/*  navWidth={navWidth}*/}
+          {/*  navVisible={navVisible}*/}
+          {/*  setNavVisible={setNavVisible}*/}
+          {/*  toggleNavVisibility={toggleNavVisibility}*/}
+          {/*  {...props}*/}
+          {/*/>*/}
 
-        <MainContentWrapper className='layout-content-wrapper'>
-          {/* AppBar Component */}
-          <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
+          <MainContentWrapper className='layout-content-wrapper'>
+            {/* AppBar Component */}
+            <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
 
-          {/* Content */}
-          <ContentWrapper
-            className='layout-page-content'
-            sx={{
-              ...(contentWidth === 'boxed' && {
-                mx: 'auto',
-                '@media (min-width:1980px)': { maxWidth: 1980 },
-                '@media (min-width:1440px)': { maxWidth: 1440 },
-                '@media (min-width:1200px)': { maxWidth: '100%' }
-              })
-            }}
-          >
-
+            {/* Content */}
+            <ContentWrapper
+              className='layout-page-content'
+              sx={{
+                ...(contentWidth === 'boxed' && {
+                  mx: 'auto',
+                  '@media (min-width:1980px)': { maxWidth: 1980 },
+                  '@media (min-width:1440px)': { maxWidth: 1440 },
+                  '@media (min-width:1200px)': { maxWidth: '100%' }
+                })
+              }}
+            >
               {children}
-          </ContentWrapper>
+            </ContentWrapper>
 
-          {/* Footer Component */}
-          <Footer {...props} />
+            {/* Footer Component */}
+            <Footer {...props} />
 
-          {/* Portal for React Datepicker */}
-          <DatePickerWrapper sx={{ zIndex: 11 }}>
-            <Box id='react-datepicker-portal'></Box>
-          </DatePickerWrapper>
-        </MainContentWrapper>
-      </VerticalLayoutWrapper>
+            {/* Portal for React Datepicker */}
+            <DatePickerWrapper sx={{ zIndex: 11 }}>
+              <Box id='react-datepicker-portal'></Box>
+            </DatePickerWrapper>
+          </MainContentWrapper>
+        </VerticalLayoutWrapper>
       </PerfectScrollbar>
       {/* Scroll to top button */}
       {scrollToTop ? (

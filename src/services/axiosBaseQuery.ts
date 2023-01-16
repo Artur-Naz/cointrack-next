@@ -5,7 +5,6 @@ import { getSession, signOut } from 'next-auth/react'
 import { ThunkDispatch } from 'redux-thunk'
 import { setToken } from '../store/slices/authSlice'
 import { toast } from 'react-toastify'
-import Typography from '@mui/material/Typography'
 
 interface CustomQueryArgs extends AxiosRequestConfig {
   onSuccess?: (dispatch: AppDispatch, data: any) => Promise<void> | void
@@ -84,10 +83,9 @@ export const axiosBaseQuery: CustomBaseQueryType = async (fetchArgs, { dispatch,
       console.error('Error in onError method', e)
       throw e
     }
-    if(axios.isAxiosError(err)) {
-      toast(err.message +'\n'+ err?.response?.data.message)
+    if (axios.isAxiosError(err)) {
+      toast(err.message + '\n' + err?.response?.data.message)
     }
-
 
     return {
       error: err.response?.data

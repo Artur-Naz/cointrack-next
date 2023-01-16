@@ -129,6 +129,7 @@ export class CalculateCoinBalancesSparklines {
     const n = arr.length - 1
     let start = 0
     let end = n
+
     // Find the mid index
     let mid = Math.floor((start + end) / 2)
 

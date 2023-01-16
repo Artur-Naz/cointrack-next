@@ -17,11 +17,8 @@ import { Settings } from 'src/@core/context/settingsContext'
 import ModeToggler from 'src/@core/layouts/components/shared-components/ModeToggler'
 import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown'
 import NotificationDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdown'
-import Link from 'next/link'
 import PortfolioTabs from '../../../modules/dashboard/components/tabs/PortfolioTabs'
 import React from 'react'
-import BalanceChart from '../../../modules/dashboard/components/Charts/BalanceChart'
-import HoldingsTable from '../../../modules/dashboard/components/HoldingsTable/HoldingsTable'
 
 interface Props {
   hidden: boolean

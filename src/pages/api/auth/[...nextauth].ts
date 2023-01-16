@@ -12,12 +12,13 @@ export default NextAuth({
         email: { label: 'Email', type: 'text', placeholder: 'jsmith' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         try {
           const { data } = await axios.post(`${process.env.NEXT_PUBLIC_COINTRACK_URL}/api/v1/auth/login`, {
             email: credentials?.email,
             password: credentials?.password
           })
+
           return data
         } catch (e) {
           console.log(e)
@@ -28,7 +29,7 @@ export default NextAuth({
     })
   ],
   pages: {
-    signIn: '/auth/login'
+    signIn: '/auth/login',
   },
 
   //debug: true,
@@ -125,9 +126,11 @@ async function getProfile(accessToken?: string) {
       portfolioUpdates: user.userPlan?.currentPlan.portfolioUpdates,
       trialPeriod: user.userPlan?.currentPlan.trialPeriod
     }
+
     return normalizedUser
   } catch (e) {
-    console.log(e);
+    console.log(e)
+
     return null
   }
 }

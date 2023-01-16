@@ -1,22 +1,17 @@
-import {
-  combineReducers,
-  createAction,
-  createEntityAdapter,
-  createSlice,
-  EntityState,
-  PayloadAction
-} from '@reduxjs/toolkit'
+import { createAction, createEntityAdapter, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 import { HYDRATE } from 'next-redux-wrapper'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { AppState } from '../../../store/store'
 
-export type Job = { id: string; state: PortfolioState; progress: number }
+export type RawJob = { jobId: string; state: PortfolioState; progress?: number; error?: string }
+export type Job = { id: string; state: PortfolioState; progress?: number }
 export type PortfolioState = number | 'completed' | 'waiting' | 'active' | 'delayed' | 'failed' | 'paused'
 export const jobAdapter = createEntityAdapter<Job>({
   selectId: job => job.id,
   sortComparer: (a, b) => a.id.localeCompare(b.id)
 })
+
 // Type for our state
 export interface JobState {
   jobs: EntityState<Job>
@@ -56,7 +51,7 @@ export const jobSlice = createSlice({
   },
 
   extraReducers: builder => {
-    builder.addCase(createAction<AppState>(HYDRATE), (state, action) => {
+    builder.addCase(createAction<AppState>(HYDRATE), (state) => {
       return state
     })
   }

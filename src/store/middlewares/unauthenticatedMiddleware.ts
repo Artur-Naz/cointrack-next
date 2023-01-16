@@ -1,10 +1,12 @@
-import { isRejectedWithValue, Middleware } from '@reduxjs/toolkit';
-import {logout} from "../slices/authSlice";
+import { isRejectedWithValue, Middleware } from '@reduxjs/toolkit'
 
-export const unauthenticatedMiddleware: Middleware = ({ dispatch }) => (next) => (action) => {
+export const unauthenticatedMiddleware: Middleware =
+  ({  }) =>
+  next =>
+  action => {
     if (isRejectedWithValue(action) && action.payload.status === 401) {
       //  dispatch(logout());
     }
 
-    return next(action);
-};
+    return next(action)
+  }

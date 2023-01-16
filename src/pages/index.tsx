@@ -23,91 +23,93 @@ import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
 
 const Dashboard = () => {
-    return (
-        <ApexChartWrapper sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-        }}>
-            <Grid minWidth={'100px'} flexBasis={'25%'} flexGrow={1} px={2} pb={4} container spacing={6} direction={'column'}>
-                <Grid item >
-                    <Trophy />
-                </Grid>
-                <Grid item>
-                    <StatisticsCard />
-                </Grid>
+  return (
+    <ApexChartWrapper
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap'
+      }}
+    >
+      <Grid minWidth={'100px'} flexBasis={'25%'} flexGrow={1} px={2} pb={4} container spacing={6} direction={'column'}>
+        <Grid item>
+          <Trophy />
+        </Grid>
+        <Grid item>
+          <StatisticsCard />
+        </Grid>
+      </Grid>
+      <Grid flexBasis={'calc(75% - 12px)'} flexGrow={1} px={2} container spacing={6}>
+        <Grid item xs={12} lg={4}>
+          <Trophy />
+        </Grid>
+        <Grid item xs={12} lg={8}>
+          <StatisticsCard />
+        </Grid>
+        <Grid item xs={12} md={6} lg={4}>
+          <WeeklyOverview />
+        </Grid>
+        <Grid item xs={12} md={6} lg={4}>
+          <TotalEarning />
+        </Grid>
+        <Grid item xs={12} md={6} lg={4}>
+          <Grid container spacing={6}>
+            <Grid item xs={6}>
+              <CardStatisticsVerticalComponent
+                stats='$25.6k'
+                icon={<Poll />}
+                color='success'
+                trendNumber='+42%'
+                title='Total Profit'
+                subtitle='Weekly Profit'
+              />
             </Grid>
-            <Grid flexBasis={'calc(75% - 12px)'} flexGrow={1} px={2} container spacing={6}>
-                <Grid item xs={12} lg={4}>
-                    <Trophy />
-                </Grid>
-                <Grid item xs={12} lg={8}>
-                    <StatisticsCard />
-                </Grid>
-                <Grid item xs={12} md={6} lg={4}>
-                    <WeeklyOverview />
-                </Grid>
-                <Grid item xs={12} md={6} lg={4}>
-                    <TotalEarning />
-                </Grid>
-                <Grid item xs={12} md={6} lg={4}>
-                    <Grid container spacing={6}>
-                        <Grid item xs={6}>
-                            <CardStatisticsVerticalComponent
-                                stats='$25.6k'
-                                icon={<Poll />}
-                                color='success'
-                                trendNumber='+42%'
-                                title='Total Profit'
-                                subtitle='Weekly Profit'
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <CardStatisticsVerticalComponent
-                                stats='$78'
-                                title='Refunds'
-                                trend='negative'
-                                color='secondary'
-                                trendNumber='-15%'
-                                subtitle='Past Month'
-                                icon={<CurrencyUsd />}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <CardStatisticsVerticalComponent
-                                stats='862'
-                                trend='negative'
-                                trendNumber='-18%'
-                                title='New Project'
-                                subtitle='Yearly Project'
-                                icon={<BriefcaseVariantOutline />}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <CardStatisticsVerticalComponent
-                                stats='15'
-                                color='warning'
-                                trend='negative'
-                                trendNumber='-18%'
-                                subtitle='Last Week'
-                                title='Sales Queries'
-                                icon={<HelpCircleOutline />}
-                            />
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} md={6} lg={4}>
-                    <SalesByCountries />
-                </Grid>
-                <Grid item xs={12} md={12} lg={8}>
-                    <DepositWithdraw />
-                </Grid>
-                <Grid item xs={12}>
-                    <Table />
-                </Grid>
+            <Grid item xs={6}>
+              <CardStatisticsVerticalComponent
+                stats='$78'
+                title='Refunds'
+                trend='negative'
+                color='secondary'
+                trendNumber='-15%'
+                subtitle='Past Month'
+                icon={<CurrencyUsd />}
+              />
             </Grid>
-        </ApexChartWrapper>
-    )
+            <Grid item xs={6}>
+              <CardStatisticsVerticalComponent
+                stats='862'
+                trend='negative'
+                trendNumber='-18%'
+                title='New Project'
+                subtitle='Yearly Project'
+                icon={<BriefcaseVariantOutline />}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <CardStatisticsVerticalComponent
+                stats='15'
+                color='warning'
+                trend='negative'
+                trendNumber='-18%'
+                subtitle='Last Week'
+                title='Sales Queries'
+                icon={<HelpCircleOutline />}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} md={6} lg={4}>
+          <SalesByCountries />
+        </Grid>
+        <Grid item xs={12} md={12} lg={8}>
+          <DepositWithdraw />
+        </Grid>
+        <Grid item xs={12}>
+          <Table />
+        </Grid>
+      </Grid>
+    </ApexChartWrapper>
+  )
 }
 
 export default Dashboard

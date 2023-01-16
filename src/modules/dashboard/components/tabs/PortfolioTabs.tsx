@@ -2,12 +2,11 @@ import * as React from 'react'
 import { styled } from '@mui/material/styles'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
-import PhoneIcon from '@mui/icons-material/Phone'
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks'
 import { selectCurrentTab, setDashboardTab } from '../../slices/dashboardSlice'
 import { memo, useMemo } from 'react'
 import { Typography } from '@mui/material'
-import { TabProps, TabTypeMap } from '@mui/material/Tab/Tab'
+import { TabProps } from '@mui/material/Tab/Tab'
 
 interface StyledTabsProps {
   children?: React.ReactNode
@@ -16,10 +15,7 @@ interface StyledTabsProps {
 }
 
 const StyledTabs = styled((props: StyledTabsProps) => (
-    <Tabs
-        {...props}
-        TabIndicatorProps={{ children: <span className="MuiTabs-indicatorSpan" /> }}
-    />
+  <Tabs {...props} TabIndicatorProps={{ children: <span className='MuiTabs-indicatorSpan' /> }} />
 ))({
   // '& .MuiTabs-indicator': {
   //   display: 'flex',
@@ -33,17 +29,18 @@ const StyledTabs = styled((props: StyledTabsProps) => (
   // }
 })
 
-interface StyledTabProps {
-  label: React.ReactNode
-  icon?: React.ReactNode
-  iconPosition: string
-}
+// interface StyledTabProps {
+//   label: React.ReactNode
+//   icon?: React.ReactNode
+//   iconPosition: string
+// }
 
 export const StyledTab = memo(
   styled((props: TabProps) => <Tab disableRipple {...props} />)(({ theme }) => ({
     // textTransform: 'none',
     // fontWeight: theme.typography.fontWeightRegular,
-    // fontSize: theme.typography.pxToRem(15),
+     fontSize: theme.typography.pxToRem(15),
+
     // marginRight: theme.spacing(1),
     // color: 'rgba(255, 255, 255, 0.7)',
     // backgroundColor: theme.palette.background.paper,
@@ -67,7 +64,7 @@ function a11yProps(index: number) {
 }
 interface PortfolioTabsProps {
   children?: React.ReactNode
-  tabs: {label:React.ReactNode }[]
+  tabs: { label: React.ReactNode }[]
 }
 const PortfolioTabs: React.FC<PortfolioTabsProps> = ({ tabs }) => {
   const currentTab = useAppSelector(selectCurrentTab)
@@ -88,7 +85,7 @@ const PortfolioTabs: React.FC<PortfolioTabsProps> = ({ tabs }) => {
           {...a11yProps(index)}
         />
       )),
-    []
+    [tabs]
   )
 
   return (

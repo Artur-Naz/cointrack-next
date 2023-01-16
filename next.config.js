@@ -25,6 +25,10 @@ module.exports = {
           {
             from: './node_modules/socket.io-client/dist/socket.io.min.js',
             to: './static/chunks/'
+          },
+          {
+            from: './src/services/shared-worker.js',
+            to: './static/chunks/'
           }
         ]
       })

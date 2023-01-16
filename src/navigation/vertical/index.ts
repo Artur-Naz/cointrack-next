@@ -11,7 +11,7 @@ import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 
 // ** Type import
-import { VerticalNavItemsType } from 'src/@core/layouts/types'
+//import { VerticalNavItemsType } from 'src/@core/layouts/types'
 
 const navigation = (): any => {
   return [

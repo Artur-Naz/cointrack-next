@@ -7,7 +7,7 @@ import GlobalStyles from '@mui/material/GlobalStyles'
 import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles'
 
 // ** Type Imports
-import { Settings } from 'src/@core/context/settingsContext'
+//import { Settings } from 'src/@core/context/settingsContext'
 
 // ** Theme Config
 import themeConfig from 'src/configs/themeConfig'
@@ -21,7 +21,7 @@ import themeOptions from './ThemeOptions'
 
 // ** Global Styles
 import GlobalStyling from './globalStyles'
-import {useSettings} from "../hooks/useSettings";
+import { useSettings } from '../hooks/useSettings'
 
 interface Props {
   children: ReactNode

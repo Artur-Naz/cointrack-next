@@ -1,11 +1,9 @@
-import { createAction, createSlice, PayloadAction} from '@reduxjs/toolkit'
+import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { HYDRATE } from 'next-redux-wrapper'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { AppState } from '../../../store/store'
 import { portfoliosApi } from '../api/portfoliosApi'
-
-
 
 // Type for our state
 export interface DashboardState {
@@ -18,14 +16,14 @@ export interface DashboardState {
 const initialState: DashboardState = {
   dashboardMenu: {},
   selectedPortfolio: null,
-  selectedTab: 0,
+  selectedTab: 0
 }
 
 export const dashboardSlice = createSlice({
   name: 'dashboard',
   initialState,
 
-  reducers:{
+  reducers: {
     toggle(state, action: PayloadAction<string>) {
       state.dashboardMenu[action.payload] = !state.dashboardMenu[action.payload]
     },
@@ -34,12 +32,12 @@ export const dashboardSlice = createSlice({
     },
     setSelectedPortfolio(state, action: PayloadAction<string>) {
       state.selectedPortfolio = action.payload
-    },
+    }
   },
 
   extraReducers: builder => {
     builder
-      .addCase(createAction<AppState>(HYDRATE), (state, action) => {
+      .addCase(createAction<AppState>(HYDRATE), (state) => {
         return state
       })
       .addMatcher(
@@ -61,6 +59,5 @@ export const { toggle, setDashboardTab, setSelectedPortfolio } = dashboardSlice.
 
 export const selectCurrentTab = (state: AppState) => state.dashboard.selectedTab
 export const selectSelectedPortfolio = (state: AppState) => state.dashboard.selectedPortfolio
-
 
 export default persistReducer({ key: dashboardSlice.name, storage }, dashboardSlice.reducer)

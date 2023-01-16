@@ -1,9 +1,9 @@
 import * as React from 'react'
 import Box from '@mui/material/Box'
-import { FormControl, FormGroup, InputLabel, Paper, Select, Stack } from '@mui/material'
-import { memo, SyntheticEvent, useCallback, useEffect, useMemo } from 'react'
+import { FormControl, InputLabel, Select, Stack } from '@mui/material'
+import { memo, useMemo } from 'react'
 import { portfolioItemSelectors, portfolioSelectors, useGetUserPortfolioQuery } from '../../api/portfoliosApi'
-import { useAppDispatch, useAppSelector } from '../../../../store/hooks'
+import {  useAppSelector } from '../../../../store/hooks'
 import { selectAuthState } from '../../../../store/slices/authSlice'
 import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
@@ -13,17 +13,8 @@ import _ from 'lodash'
 
 // ** Third Party Components
 import CardHeader from '@mui/material/CardHeader'
-import IconButton from '@mui/material/IconButton'
-import DotsVertical from 'mdi-material-ui/DotsVertical'
 import CardContent from '@mui/material/CardContent'
 import Grid from '@mui/material/Grid'
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import moment from 'moment'
-import { timeLine } from '../../../../shared/components/chartDetales/timeLine'
-import CustomTooltip from '../../../../shared/components/chartDetales/CustomTooltip'
-import CustomizedDot from '../../../../shared/components/chartDetales/CustomizedDot'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
 import Card from '@mui/material/Card'
 import { styled } from '@mui/material/styles'
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
@@ -32,8 +23,7 @@ const styles = {
   maxHeight: '100vh',
   '& .MuiMenuItem-root:last-of-type': {
     border: 0
-  },
-
+  }
 }
 
 // ** Styled PerfectScrollbar component
@@ -42,7 +32,7 @@ const PerfectScrollbar = styled(PerfectScrollbarComponent)({
 })
 function CustomizedAccordions() {
   const isAuth = useAppSelector(selectAuthState)
-  const { portfolios, portfolioItems, isLoading, isFetching, error } = useGetUserPortfolioQuery(undefined, {
+  const { portfolioItems, isLoading, error } = useGetUserPortfolioQuery(undefined, {
     pollingInterval: 5 * 60000,
     refetchOnMountOrArgChange: false,
     skip: !isAuth,
@@ -62,7 +52,7 @@ function CustomizedAccordions() {
     const filteredPortfolioItems = portfolioItems.filter(Boolean)
 
     return _.groupBy(filteredPortfolioItems, item => item.parentId)
-  }, [portfolios, portfolioItems])
+  }, [portfolioItems])
 
   if (isLoading) return <Box>Skeleton</Box>
 
@@ -94,14 +84,17 @@ function CustomizedAccordions() {
           </>
         }
       />
-      <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important`,px: theme => `${theme.spacing(0)} !important` }}>
-        <Grid container spacing={[5, 0]} >
+      <CardContent
+        sx={{ pt: theme => `${theme.spacing(3)} !important`, px: theme => `${theme.spacing(0)} !important` }}
+      >
+        <Grid container spacing={[5, 0]}>
           <PerfectScrollbar
-            options={{ wheelPropagation: false, suppressScrollX: true, }}
+            options={{ wheelPropagation: false, suppressScrollX: true }}
             sx={{
               maxHeight: 'calc(100vh - 250px)',
               width: '100%',
-              padding: theme => theme.spacing(0,5)
+              padding: theme => theme.spacing(0, 5)
+
               // '& .ps': {
               //   overflowX: 'auto !Important',
               // },

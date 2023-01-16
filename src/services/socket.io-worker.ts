@@ -1,5 +1,7 @@
 import EventEmitter from 'eventemitter3'
 import io, { Socket } from 'socket.io-client'
+
+// @ts-ignore
 import SocketIoSharedWorker from '../../public/shared-worker'
 import { ManagerOptions } from 'socket.io-client/build/esm/manager'
 import { SocketOptions } from 'socket.io-client/build/esm/socket'
@@ -28,23 +30,23 @@ export class SharedWorkerSocketIO {
     const workerUri = this.getWorkerUri()
     this.log('Starting Worker', this.WorkerType, workerUri)
     this.worker = new this.WorkerType(workerUri, {
-      name: this.socketUri,
-
+      name: this.socketUri
     })
+
     const port = (this.worker as SharedWorker).port || this.worker
     port.onmessage = event => {
       this.log('<< worker received message:', event.data.type, event.data.message)
       this.events.emit(event.data.type, event.data.message)
     }
-    port.postMessage({
-      eventType: 'init',
-      event: 'opts',
-      data: this.opts
-    })
     this.worker.onerror = event => {
       this.log('worker error', event)
       this.events.emit('error', event)
     }
+    port.postMessage({
+      eventType: 'init',
+      event: 'opts',
+      data: this.opts.auth
+    })
     this.log('worker started')
   }
 
@@ -79,6 +81,20 @@ export class SharedWorkerSocketIO {
       this.socket?.on(event, cb)
     }
   }
+  off(eventName: string) {
+    if (this.worker) {
+      this.log('worker add handler on event:', event)
+      const port = (this.worker as SharedWorker).port || this.worker
+      port.postMessage({
+        eventType: 'off',
+        event: eventName
+      })
+      this.events.on(event as any, () => null)
+    } else {
+      this.log('socket add handler on event:', event)
+      this.socket?.on(event as any, () => null)
+    }
+  }
 
   start() {
     if (this.started) return
@@ -101,6 +117,7 @@ export class SharedWorkerSocketIO {
 
   getWorkerObjectUrl() {
     const script = '(' + SocketIoSharedWorker.toString() + ')()'
+
     return global.URL.createObjectURL(new Blob([script], { type: 'application/javascript' }))
   }
 
@@ -116,7 +133,8 @@ export class SharedWorkerSocketIO {
     }
   }
 
-  log = console.log.bind(console)
+  log = process.env.NODE_ENV !== 'production' ? console.log.bind(console) : () => null
 }
 
-export default (uri: string, options: Partial<ManagerOptions & SocketOptions> = {}) => new SharedWorkerSocketIO(uri, options)
+export default (uri: string, options: Partial<ManagerOptions & SocketOptions> = {}) =>
+  new SharedWorkerSocketIO(uri, options)

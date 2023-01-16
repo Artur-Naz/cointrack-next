@@ -1,11 +1,11 @@
-'use strict';
+'use strict'
 const SharedWorker = () => {
   const log = console.log.bind(console)
   log('Loading shared worker', self.name, self)
 
   try {
     importScripts('/_next/static/chunks/socket.io.min.js')
-  } catch(e) {
+  } catch (e) {
     window.io = require('socket.io-client')
   }
 
@@ -14,40 +14,39 @@ const SharedWorker = () => {
     socketConnected = false
 
   // handle shared webworker clients already with ports
-  socket.on('connect', function(msg) {
+  socket.on('connect', function (msg) {
     log('socket connected successfuly')
     socketConnected = true
-    ports.forEach(function(port) {
+    ports.forEach(function (port) {
       port.postMessage({
         type: 'connect',
         message: msg
       })
     })
   })
-  socket.on('disconnect', function(msg) {
+  socket.on('disconnect', function (msg) {
     log('socket disconnected')
     socketConnected = false
-    setTimeout(() => socket.connect(), 5000);
-    ports.forEach(function(port) {
+    setTimeout(() => socket.connect(), 5000)
+    ports.forEach(function (port) {
       port.postMessage({
         type: 'disconnect',
         message: msg
       })
     })
   })
-  socket.on("connect_error", (msg) => {
+  socket.on('connect_error', msg => {
     log('socket connection error', msg)
-    ports.forEach(function(port) {
+    ports.forEach(function (port) {
       port.postMessage({
         type: 'connect_error',
         message: msg
       })
     })
-  });
-
+  })
 
   // shared worker handle new clients
-  addEventListener('connect', function(event) {
+  addEventListener('connect', function (event) {
     const port = event.ports[0]
     ports.push(port)
     port.start()
@@ -60,18 +59,19 @@ const SharedWorker = () => {
   // regular worker handle messages
   addEventListener('message', event => handleMessage(event, self))
   if (typeof Worker !== 'undefined') {
-    setTimeout(() => postMessage({
-      type: 'connect',
-      message: null
-    }))
+    setTimeout(() =>
+      postMessage({
+        type: 'connect',
+        message: null
+      })
+    )
   }
 
   // handle messages
   function handleMessage(event, port) {
-
     const model = event.data
     log('port received message', model.eventType, model.event, model.data)
-    switch(model.eventType) {
+    switch (model.eventType) {
       case 'on':
         const eventName = model.event
         if (eventName == 'connect') {
@@ -80,32 +80,31 @@ const SharedWorker = () => {
               type: eventName
             })
           }
-          break;
+          break
         }
         if (eventName == 'disconnect') {
-          break;
+          break
         }
-        socket.on(eventName, function(msg) {
+        socket.on(eventName, function (msg) {
           log('socket received message', msg)
           port.postMessage({
             type: eventName,
             message: msg
           })
         })
-        break;
+        break
       case 'off':
         socket.off(model.event)
-        break;
+        break
       case 'emit':
         socket.emit(model.event, model.data) // todo: ack cb
-        break;
+        break
       case 'init':
         log('set socket options', model.data)
         socket.auth = model.data
         socket.connect()
-        break;
+        break
     }
-
   }
 }
 

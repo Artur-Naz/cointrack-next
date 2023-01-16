@@ -1,4 +1,4 @@
-.container{
+.container {
   height: 100%;
   position: relative;
   display: flex;
@@ -14,12 +14,10 @@
   margin-left: 23px;
 }
 
-
-
 .bar {
   width: 23px;
   position: absolute;
-  background-color: #DCCDFF;
+  background-color: #dccdff;
   border: none;
   transform: skewY(-23deg);
   bottom: -12px;
@@ -27,24 +25,24 @@
 }
 
 .bar:before {
-  content: "";
+  content: '';
   position: absolute;
   left: -23px;
   bottom: 11px;
   height: 100%;
   width: 23px;
-  background-color: #F7F4FF;
+  background-color: #f7f4ff;
   transform: skewY(45deg);
 }
 
 .bar:after {
-  content: "";
+  content: '';
   position: absolute;
   top: -22.7px;
   left: -11.7px;
   width: 23px;
   height: 23px;
-  background-color: #805AD5;
+  background-color: #805ad5;
   transform: skewX(45deg);
 }
 
@@ -52,7 +50,7 @@
   width: 23px;
   height: 100%;
   position: absolute;
-  background-color: #805AD5;
+  background-color: #805ad5;
   border: none;
   transform: skewY(-23deg);
   bottom: -12px;
@@ -60,25 +58,25 @@
 }
 
 .shadow:before {
-  content: "";
+  content: '';
   position: absolute;
   left: -23px;
   bottom: 11px;
   height: 100%;
   width: 23px;
-  background-color: #805AD5;
+  background-color: #805ad5;
   transform: skewY(45deg);
   opacity: 0.8;
 }
 
 .shadow:after {
-  content: "";
+  content: '';
   position: absolute;
   top: -22.7px;
   left: -11.7px;
   width: 23px;
   height: 23px;
-  background-color: #805AD5;
+  background-color: #805ad5;
   transform: skewX(45deg);
   opacity: 0.8;
 }
@@ -107,7 +105,7 @@
   white-space: nowrap;
 }
 
-@media screen and (min-width: 992px) and (max-width: 1279px){
+@media screen and (min-width: 992px) and (max-width: 1279px) {
   .chartWrap {
     height: 165px;
   }
@@ -117,8 +115,8 @@
   }
 }
 
-@media screen and (min-width: 768px) and (max-width: 991px){
-  .container{
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .container {
     gap: 20px;
   }
 
@@ -128,8 +126,8 @@
   }
 }
 
-@media screen and (max-width: 767px){
-  .container{
+@media screen and (max-width: 767px) {
+  .container {
     flex: 1 0 auto;
     gap: 15px;
   }

@@ -1,4 +1,3 @@
-import Dashboard from "../../modules/dashboard/dashboard";
+import Dashboard from '../../modules/dashboard/dashboard'
 
-
-export default Dashboard;
+export default Dashboard

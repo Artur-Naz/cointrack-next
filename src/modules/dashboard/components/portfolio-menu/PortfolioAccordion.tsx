@@ -3,15 +3,13 @@ import { Stack } from '@mui/material'
 import * as React from 'react'
 import { styled } from '@mui/material/styles'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
-import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary'
 import MuiAccordionDetails from '@mui/material/AccordionDetails'
-import Box from '@mui/material/Box'
 import { memo, SyntheticEvent } from 'react'
 import { setSelectedPortfolio, toggle } from '../../slices/dashboardSlice'
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks'
 import { Dictionary } from '@reduxjs/toolkit'
 import { PortfolioItemEntity } from '../../api/portfoliosApi'
-import Divider from "@mui/material/Divider";
+import Divider from '@mui/material/Divider'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion elevation={1} square {...props} />)(({ theme }) => ({
   borderRadius: '6px',
@@ -26,12 +24,13 @@ const Accordion = styled((props: AccordionProps) => <MuiAccordion elevation={1} 
     display: 'none'
   },
   '& .Mui-expanded': {
-   // backgroundColor: '#121416'
+    // backgroundColor: '#121416'
   }
 }))
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  padding: 0,
+  padding: theme.spacing(0),
+
   // backgroundColor: '#121416',
   borderTop: '1px solid rgba(0, 0, 0, .125)',
   '& .MuiCollapse-entered': {
@@ -53,12 +52,15 @@ const MemoizedAccordion: React.FC<MemoizedAccordionProps> = memo(({ portfolioId,
   }
 
   return (
-    <Accordion  key={portfolioId} expanded={expanded} onChange={e => handleChange(e, portfolioId)}>
+    <Accordion key={portfolioId} expanded={expanded} onChange={e => handleChange(e, portfolioId)}>
       <PortfolioMenuItemSummary key={portfolioId} id={portfolioId} />
       <AccordionDetails>
         <Stack spacing={0.5}>
           {item?.map(i => (
-           <> <PortfolioMenuItemDetails key={i.id} id={i.id} /> <Divider/></>
+            <>
+              {' '}
+              <PortfolioMenuItemDetails key={i.id} id={i.id} /> <Divider />
+            </>
           ))}
         </Stack>
       </AccordionDetails>

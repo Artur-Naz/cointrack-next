@@ -1,17 +1,13 @@
-import { useMode } from '../configs/theme'
 import { Provider } from 'react-redux'
-import React, {ReactNode, useEffect} from 'react'
+import React, { ReactNode, useEffect } from 'react'
 import { wrapper } from '../store/store'
 import { setupListeners } from '@reduxjs/toolkit/query'
-import { PersistGate } from 'redux-persist/integration/react'
-import { persistStore } from 'redux-persist'
 import { AuthGuardHoc } from '../@core/hoc/AuthGuardHoc'
-import {SessionProvider, useSession} from 'next-auth/react'
+import { SessionProvider, useSession } from 'next-auth/react'
 
 // ** Next Imports
 import Head from 'next/head'
 import { Router } from 'next/router'
-import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 
 // ** Loader Import
@@ -29,7 +25,7 @@ import UserLayout from 'src/layouts/UserLayout'
 import ThemeComponent from 'src/@core/theme/ThemeComponent'
 
 // ** Contexts
-import { SettingsConsumer, SettingsProvider } from 'src/@core/context/settingsContext'
+import { SettingsProvider } from 'src/@core/context/settingsContext'
 
 // ** Utils Imports
 import { createEmotionCache } from 'src/@core/utils/create-emotion-cache'
@@ -41,14 +37,14 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 import '../../styles/globals.css'
 import { Gateway } from '../services/socket.io'
 import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
-import {useAppDispatch} from "../store/hooks";
-import dynamic from "next/dynamic";
+import 'react-toastify/dist/ReactToastify.css'
+import { useAppDispatch } from '../store/hooks'
+
 // ** Extend App Props with Emotion
-type ExtendedAppProps = AppProps & {
-  Component: NextPage
-  emotionCache: EmotionCache
-}
+// type ExtendedAppProps = AppProps & {
+//   Component: NextPage
+//   emotionCache: EmotionCache
+// }
 
 const clientSideEmotionCache = createEmotionCache()
 
@@ -64,28 +60,23 @@ if (themeConfig.routingLoader) {
     NProgress.done()
   })
 }
-const SocketProvider: React.FC<{ children: ReactNode }> = ({children}) => {
-  const {data} = useSession()
+const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { data } = useSession()
   const dispatch = useAppDispatch()
   useEffect(() => {
     if (data?.accessToken) {
-      const gateway = Gateway.SocketFactory(
-        'http://localhost:8000',
-        data.accessToken,
-        dispatch
-      )
-
+      const gateway = Gateway.SocketFactory('http://localhost:8000', data.accessToken, dispatch)
 
       return () => gateway.unregisterHandlers()
     }
-  }, [data?.accessToken])
-  return (<>{children}</>)
+  }, [data?.accessToken, dispatch])
+
+  return <>{children}</>
 }
 function App({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache,
-  ...appProps
 }: AppProps & { emotionCache: EmotionCache; auth: boolean }) {
   const { store } = wrapper.useWrappedStore({ pageProps })
   setupListeners(store.dispatch)
@@ -113,12 +104,12 @@ function App({
       <Provider store={store}>
         <SessionProvider session={pageProps.session}>
           <SocketProvider>
-          <AuthGuardHoc>
-            <SettingsProvider>
-              <ThemeComponent >{getLayout(<Component {...pageProps} />)}</ThemeComponent>
-              <ToastContainer />
-            </SettingsProvider>
-          </AuthGuardHoc>
+            <AuthGuardHoc>
+              <SettingsProvider>
+                <ThemeComponent>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
+                <ToastContainer />
+              </SettingsProvider>
+            </AuthGuardHoc>
           </SocketProvider>
         </SessionProvider>
       </Provider>

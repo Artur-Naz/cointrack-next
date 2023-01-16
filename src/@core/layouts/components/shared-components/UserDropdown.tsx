@@ -2,7 +2,7 @@
 import { useState, SyntheticEvent, Fragment } from 'react'
 
 // ** Next Import
-import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -22,7 +22,7 @@ import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
-import {signOut} from "next-auth/react";
+import { signOut } from 'next-auth/react'
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -38,7 +38,7 @@ const UserDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<Element | null>(null)
 
   // ** Hooks
-  const router = useRouter()
+ // const router = useRouter()
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
@@ -49,7 +49,7 @@ const UserDropdown = () => {
   }
 
   const handleLogout = async () => {
-    await signOut({redirect:false})
+    await signOut({ redirect: false })
     setAnchorEl(null)
   }
 

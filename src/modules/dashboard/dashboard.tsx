@@ -1,16 +1,11 @@
-import { Box, FormControl, InputLabel, Paper, Select, Stack, Typography, useTheme } from '@mui/material'
-import Button from '@mui/material/Button'
+import { Box, Typography } from '@mui/material'
 import Grid from '@mui/material/Grid'
-import MenuItem from '@mui/material/MenuItem'
-import React, { memo, useMemo } from 'react'
+import React, { memo } from 'react'
 
-import SearchInput from '../../shared/components/inputs/SearchInput'
 import BalanceChart from './components/Charts/BalanceChart'
 import HoldingsTable from './components/HoldingsTable/HoldingsTable'
 import CustomizedAccordions from './components/portfolio-menu/portfolio-menu'
-import PortfolioTabs from './components/tabs/PortfolioTabs'
 import PortfoliosTabPanels from './components/tabs/PortfoliosTabPanel'
-import Trophy from '../../views/dashboard/Trophy'
 import StatisticsCard from '../../views/dashboard/StatisticsCard'
 import WeeklyOverview from '../../views/dashboard/WeeklyOverview'
 import TotalEarning from '../../views/dashboard/TotalEarning'
@@ -22,7 +17,6 @@ import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import SalesByCountries from '../../views/dashboard/SalesByCountries'
 import DepositWithdraw from '../../views/dashboard/DepositWithdraw'
 import Table from '../../views/dashboard/Table'
-import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Card from '@mui/material/Card'
 
@@ -112,7 +106,6 @@ const tabsData = [
   }
 ]
 const Dashboard: React.FC = () => {
-  const theme = useTheme()
 
   return (
     <Box>
@@ -120,7 +113,7 @@ const Dashboard: React.FC = () => {
         <Grid xs={6} lg={3} item container spacing={2}>
           <Grid item xs={12}>
             <CustomizedAccordions />
-            <Card sx={{mt:5}}>
+            <Card sx={{ mt: 5 }}>
               <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
                 <Grid container spacing={[5, 0]}>
                   <Typography>

@@ -57,9 +57,9 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
         url: `portfolios/all`,
         method: 'GET'
       }),
-      providesTags: (result, error, arg) => [{ type: 'portfolios', id: 'LIST' }],
+      providesTags: () => [{ type: 'portfolios', id: 'LIST' }],
 
-      transformResponse(baseQueryReturnValue: PortfoliosResponse, meta, arg) {
+      transformResponse(baseQueryReturnValue: PortfoliosResponse) {
         const assets = [...baseQueryReturnValue.exchanges, ...baseQueryReturnValue.wallets]
         const rates: RatesEntity[] = []
         const items: PortfolioItemEntity[] = []
@@ -85,12 +85,15 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
             item.rates && rates.push(transformRates(item.id, item.rates))
             items.push({ ...item, parentId: asset.id, image, rates: undefined })
             holdings.push(...items.flatMap(item => item.holdings.map(holding => ({ ...holding, parentId: item.id }))))
+
             return item.id
           })
           asset.rates && rates.push(transformRates(id, asset.rates))
+
           return res
         })
         baseQueryReturnValue.rates && rates.push(transformRates('all', baseQueryReturnValue.rates))
+
         return {
           rates: ratesAdapter.setAll(ratesAdapter.getInitialState(), rates),
           portfolios: assetsAdapter.setAll(assetsAdapter.getInitialState(), portfolios),
@@ -105,14 +108,11 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
         method: 'GET'
       }),
       async onQueryStarted(id, { dispatch, queryFulfilled }) {
-       try{
-         const { data } = await queryFulfilled
-         const jobs = data.map<Job>(({ jobId, state }) => ({ id: jobId, state, progress: 0 }))
-         dispatch(upsertJobs(jobs))
-       }catch (e) {
-
-       }
-
+        try {
+          const { data } = await queryFulfilled
+          const jobs = data.map<Job>(({ jobId, state }) => ({ id: jobId, state, progress: 0 }))
+          dispatch(upsertJobs(jobs))
+        } catch (e) {}
       }
     }),
     syncPortfolioItemById: builder.mutation<{ jobId: string; state: PortfolioState }, string>({
@@ -122,13 +122,10 @@ export const portfoliosApi = cointrackApi.injectEndpoints({
       }),
 
       async onQueryStarted(id, { dispatch, queryFulfilled }) {
-        try{
+        try {
           const { data } = await queryFulfilled
           dispatch(upsertJob({ id: data.jobId, state: data.state, progress: 0 }))
-        }catch{
-
-        }
-
+        } catch {}
       }
     })
   })

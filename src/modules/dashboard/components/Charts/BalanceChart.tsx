@@ -1,6 +1,5 @@
-import { Box, FormControl, FormGroup, Typography } from '@mui/material'
+import { FormControl, FormGroup } from '@mui/material'
 import React, { memo, useMemo, useState } from 'react'
-import SelectSmall from '../../../../shared/components/select'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import moment from 'moment/moment'
 import { timeLine } from '../../../../shared/components/chartDetales/timeLine'
@@ -9,8 +8,6 @@ import CustomizedDot from '../../../../shared/components/chartDetales/Customized
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import {
-  portfolioItemSelectors,
-  portfolioSelectors,
   SelectPortfolioRatesById,
   useGetUserPortfolioQuery
 } from '../../api/portfoliosApi'
@@ -34,7 +31,7 @@ const BalanceChart: React.FC = () => {
   const isAuth = useAppSelector(selectAuthState)
   const { rates } = useGetUserPortfolioQuery(undefined, {
     skip: !isAuth,
-    selectFromResult: ({ data, error, isLoading, isFetching }) => {
+    selectFromResult: ({ data, error, isLoading }) => {
       if (data) {
         if (selectedPortfolioId) {
           return {
@@ -59,14 +56,10 @@ const BalanceChart: React.FC = () => {
     }
   })
 
-  let data = useMemo(
-    () =>
-     rates?.minutely?.map(({ timestamp, usd }) => ({ name: timestamp, value: usd })),
-    [rates]
-  )
-  if(!data?.length) data =  [{ name: 0, value: 0 }]
-  console.log(data)
-  const colors: string[] = [
+  let data = useMemo(() => rates?.minutely?.map(({ timestamp, usd }) => ({ name: timestamp, value: usd })), [rates])
+  if (!data?.length) data = [{ name: 0, value: 0 }]
+
+  /*const colors: string[] = [
     '#6F52D8',
     '#8659FF',
     '#AA82FF',
@@ -79,7 +72,7 @@ const BalanceChart: React.FC = () => {
     '#403687',
     '#564CD6',
     '#522CAF'
-  ]
+  ]*/
 
   const [state, setState] = useState({
     usd: true,
@@ -116,7 +109,7 @@ const BalanceChart: React.FC = () => {
       <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
         <Grid container spacing={[5, 0]}>
           <ResponsiveContainer aspect={3} height={250}>
-            <LineChart data={data}  margin={{ top: 20, left: 8 }}>
+            <LineChart data={data} margin={{ top: 20, left: 8 }}>
               <CartesianGrid horizontal={true} vertical={false} stroke={'#EBEDF4'} />
               <XAxis
                 dataKey='name'
